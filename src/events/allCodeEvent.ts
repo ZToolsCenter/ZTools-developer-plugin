@@ -18,3 +18,10 @@ addZtoolsCodeEventListener('function.add-dev-plugin', (e) => {
     jumpFunctionPluginInstaller({ installFilePath: installFilePaths[0] })
   }
 })
+
+/**
+ * 重载所有开发中插件
+ */
+addZtoolsCodeEventListener('function.reload-all-plugin', (e) => {
+  //
+})

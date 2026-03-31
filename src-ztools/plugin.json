@@ -17,6 +17,12 @@
       "cmds": ["开发者工具"]
     },
     {
+      "code": "function.reload-all-plugin",
+      "explain": "重载所有开发中插件",
+      "icon": "logo.png",
+      "cmds": ["重载所有插件"]
+    },
+    {
       "code": "function.add-dev-plugin",
       "explain": "添加开发中插件",
       "icon": "logo.png",
