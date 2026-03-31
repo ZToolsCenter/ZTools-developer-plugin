@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { logInfo, logWarn } from '@/utils/logger'
 import { DevPluginSidebar } from './components/DevPluginSidebar'
@@ -27,6 +27,8 @@ const sidebarRef = ref<DevPluginSidebarExpose | null>(null)
 const pendingPluginId = ref('')
 // 防止同一时刻重复消费 jump 导入请求。
 const isHandlingJumpInstall = ref(false)
+// 全局开发项目刷新请求事件名。
+const DEV_PROJECTS_REFRESH_EVENT = 'dev-projects:refresh-requested'
 
 // 当前路由中的插件标识。
 const selectedPluginId = computed(() => {
@@ -105,6 +107,10 @@ const handleRefreshDevProjects = async (): Promise<void> => {
   await sidebarRef.value?.refreshPlugins()
 }
 
+const handleDevProjectsRefreshRequested = (): void => {
+  void sidebarRef.value?.refreshPlugins()
+}
+
 const handleJumpInstall = async (installFilePath?: string): Promise<void> => {
   if (!installFilePath || isHandlingJumpInstall.value) {
     return
@@ -142,6 +148,14 @@ watch(
     }
   }
 )
+
+onMounted(() => {
+  window.addEventListener(DEV_PROJECTS_REFRESH_EVENT, handleDevProjectsRefreshRequested)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener(DEV_PROJECTS_REFRESH_EVENT, handleDevProjectsRefreshRequested)
+})
 
 // 跳转
 useJumpFunction<PluginInstallerJumpFunction>((state) => {

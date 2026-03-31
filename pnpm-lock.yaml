@@ -78,6 +78,9 @@ importers:
       '@vue/tsconfig':
         specifier: ^0.9.0
         version: 0.9.1(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
+      '@ztools-center/ztools-api-types':
+        specifier: ^1.0.3
+        version: 1.0.3
       code-inspector-plugin:
         specifier: ^1.4.5
         version: 1.4.5
@@ -1565,6 +1568,9 @@ packages:
 
   '@xiaou66/u-styles@0.0.14':
     resolution: {integrity: sha512-RU0d7JxNLEPxOkiGyIX1WBwlyIBkZFARcBeGWMd1WGfdbQ6PiT1tLnWanlGsHEnxCOGL89U5K4cWB4Qqqi1G9w==}
+
+  '@ztools-center/ztools-api-types@1.0.3':
+    resolution: {integrity: sha512-dv1eOAIasAupqKaQL/gESk1i2+RebdM/1gvZhrvH2D/bo3enCUsAGJ8nrHnlCLBSOGB81eC/SU0IH8BNsUlmvA==}
 
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
@@ -4365,6 +4371,8 @@ snapshots:
       vue: 3.5.31(typescript@5.9.3)
 
   '@xiaou66/u-styles@0.0.14': {}
+
+  '@ztools-center/ztools-api-types@1.0.3': {}
 
   abbrev@2.0.0: {}
 

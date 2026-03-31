@@ -5,7 +5,7 @@
   "description": "ZTools 开发者插件",
   "author": "xiaou",
   "version": "1.0.0",
-  "main": "index.html",
+  "main": "dist/index.html",
   "logo": "logo.png",
   "development": {
     "main": "http://localhost:8686/"
@@ -20,7 +20,7 @@
       "code": "function.reload-all-plugin",
       "explain": "重载所有开发中插件",
       "icon": "logo.png",
-      "cmds": ["重载所有插件"]
+      "cmds": ["重载开发中插件"]
     },
     {
       "code": "function.add-dev-plugin",

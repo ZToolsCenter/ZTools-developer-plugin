@@ -9,13 +9,20 @@ import { codeInspectorPlugin } from 'code-inspector-plugin'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import {join, resolve} from "path";
 
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   server: {
     port: 8686,
     host: '0.0.0.0',
+  },
+  build: {
+    sourcemap: false,
+    emptyOutDir: true,
+    outDir: join(__dirname, '/src-ztools/dist'),
   },
   plugins: [
     vue(),

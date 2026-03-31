@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { defineComponent, h, nextTick, onMounted } from 'vue'
 const { sidebarState, messageErrorMock } = vi.hoisted(() => ({
@@ -90,6 +90,8 @@ vi.mock('@/views/HomePage/components/DevPluginSidebar', () => ({
 }))
 
 import HomePage from '@/views/HomePage/HomePage.vue'
+
+enableAutoUnmount(afterEach)
 
 const DevelopmentRouteStub = defineComponent({
   name: 'DevelopmentRouteStub',
@@ -327,6 +329,29 @@ describe('HomePage', () => {
     await flushPromises()
 
     expect(sidebarState.refreshCalls).toBe(1)
+  })
+
+  it('refreshes sidebar when dev-project refresh event is dispatched', async () => {
+    const router = createHomeRouter()
+    await router.push('/home/rabbit-screenshot/development')
+    await router.isReady()
+
+    mount(HomePage, {
+      global: {
+        plugins: [router]
+      }
+    })
+
+    await flushPromises()
+    await nextTick()
+
+    expect(sidebarState.refreshCalls).toBe(0)
+
+    window.dispatchEvent(new Event('dev-projects:refresh-requested'))
+    await flushPromises()
+    await nextTick()
+
+    expect(sidebarState.refreshCalls).toBeGreaterThan(0)
   })
 
   it('refreshes sidebar and routes to the imported project after jump install succeeds', async () => {
