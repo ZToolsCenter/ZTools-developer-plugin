@@ -10,6 +10,63 @@ const { messageErrorMock } = vi.hoisted(() => ({
 vi.mock('element-plus/theme-chalk/base.css', () => ({}))
 vi.mock('element-plus/theme-chalk/el-scrollbar.css', () => ({}))
 vi.mock('element-plus/es/components/scrollbar/style/css', () => ({}))
+vi.mock('vue-draggable-plus', () => ({
+  VueDraggable: defineComponent({
+    name: 'VueDraggable',
+    props: {
+      modelValue: {
+        type: Array,
+        default: () => []
+      }
+    },
+    emits: ['update:modelValue', 'end'],
+    setup(props, { slots }) {
+      return () => h('div', { class: 'vue-draggable-stub' }, slots.default?.({ list: props.modelValue }))
+    }
+  })
+}))
+
+vi.mock('@/views/HomePage/components/DevPluginContextMenu', () => ({
+  DevPluginContextMenu: defineComponent({
+    name: 'DevPluginContextMenu',
+    props: {
+      visible: {
+        type: Boolean,
+        default: false
+      },
+      plugin: {
+        type: Object,
+        default: null
+      },
+      position: {
+        type: Object,
+        default: () => ({ x: 0, y: 0 })
+      }
+    },
+    emits: ['pin-to-top', 'close'],
+    setup(_, { emit }) {
+      return () =>
+        h('div', { class: 'dev-plugin-context-menu-stub' }, [
+          h(
+            'button',
+            {
+              class: 'dev-plugin-context-menu-stub__pin',
+              onClick: () => emit('pin-to-top', 'knowledge-dev')
+            },
+            'pin'
+          ),
+          h(
+            'button',
+            {
+              class: 'dev-plugin-context-menu-stub__close',
+              onClick: () => emit('close')
+            },
+            'close'
+          )
+        ])
+    }
+  })
+}))
 
 vi.mock('element-plus', () => ({
   ElMessage: Object.assign(
@@ -35,6 +92,7 @@ describe('DevPluginSidebar', () => {
   const mockGetDevProjects = vi.fn()
   const mockGetRunningPlugins = vi.fn()
   const mockImportDevPlugin = vi.fn()
+  const mockUpdateDevProjectsOrder = vi.fn()
   const initialPlugin = {
     name: 'rabbit-screenshot',
     title: '兔灵截图工具',
@@ -71,6 +129,7 @@ describe('DevPluginSidebar', () => {
     mockGetDevProjects.mockReset()
     mockGetRunningPlugins.mockReset()
     mockImportDevPlugin.mockReset()
+    mockUpdateDevProjectsOrder.mockReset()
     messageErrorMock.mockClear()
 
     mockGetDevProjects.mockResolvedValueOnce([initialPlugin]).mockResolvedValueOnce([
@@ -79,12 +138,14 @@ describe('DevPluginSidebar', () => {
     ])
     mockGetRunningPlugins.mockResolvedValue([])
     mockImportDevPlugin.mockResolvedValue({ success: true })
+    mockUpdateDevProjectsOrder.mockResolvedValue({ success: true })
 
     window.ztools = {
       internal: {
         getDevProjects: mockGetDevProjects,
         getRunningPlugins: mockGetRunningPlugins,
-        importDevPlugin: mockImportDevPlugin
+        importDevPlugin: mockImportDevPlugin,
+        updateDevProjectsOrder: mockUpdateDevProjectsOrder
       }
     }
   })
@@ -221,5 +282,101 @@ describe('DevPluginSidebar', () => {
 
     expect(messageErrorMock).toHaveBeenCalledWith('导入失败')
     expect(wrapper.find('.sidebar__create-error').exists()).toBe(false)
+  })
+
+  it('persists order after drag end', async () => {
+    const wrapper = mount(DevPluginSidebar, {
+      props: {
+        selectedPluginId: 'rabbit-screenshot'
+      }
+    })
+
+    await flushPromises()
+
+    const draggable = wrapper.findComponent({ name: 'VueDraggable' })
+    draggable.vm.$emit('update:modelValue', [
+      {
+        id: 'knowledge-dev',
+        name: 'knowledge-dev',
+        title: '知识库开发',
+        version: '0.1.0',
+        description: '',
+        author: '',
+        homepage: '',
+        logo: '',
+        path: '/mock/knowledge-dev',
+        configPath: '/mock/knowledge-dev/plugin.json',
+        localStatus: 'ready',
+        lastValidatedAt: null,
+        lastError: null,
+        isRunning: false,
+        isDevModeInstalled: false
+      },
+      {
+        id: 'rabbit-screenshot',
+        name: 'rabbit-screenshot',
+        title: '兔灵截图工具',
+        version: '1.0.0',
+        description: '',
+        author: '',
+        homepage: '',
+        logo: '',
+        path: '/mock/rabbit-screenshot',
+        configPath: '/mock/rabbit-screenshot/plugin.json',
+        localStatus: 'ready',
+        lastValidatedAt: null,
+        lastError: null,
+        isRunning: false,
+        isDevModeInstalled: true
+      }
+    ])
+    draggable.vm.$emit('end')
+    await flushPromises()
+
+    expect(mockUpdateDevProjectsOrder).toHaveBeenCalledWith(['knowledge-dev', 'rabbit-screenshot'])
+  })
+
+  it('pins the current plugin to the top via context menu', async () => {
+    mockGetDevProjects.mockReset()
+    mockGetRunningPlugins.mockReset()
+    mockGetDevProjects.mockResolvedValueOnce([initialPlugin, importedPlugin])
+    mockGetRunningPlugins.mockResolvedValueOnce([])
+
+    const wrapper = mount(DevPluginSidebar, {
+      props: {
+        selectedPluginId: 'rabbit-screenshot'
+      }
+    })
+
+    await flushPromises()
+    await wrapper.find('.dev-plugin-context-menu-stub__pin').trigger('click')
+    await flushPromises()
+
+    expect(mockUpdateDevProjectsOrder).toHaveBeenCalledWith(['knowledge-dev', 'rabbit-screenshot'])
+  })
+
+  it('reloads host order when order persistence fails', async () => {
+    mockGetDevProjects.mockReset()
+    mockGetRunningPlugins.mockReset()
+    mockUpdateDevProjectsOrder.mockReset()
+    mockGetDevProjects
+      .mockResolvedValueOnce([initialPlugin, importedPlugin])
+      .mockResolvedValueOnce([initialPlugin, importedPlugin])
+    mockGetRunningPlugins.mockResolvedValue([])
+    mockUpdateDevProjectsOrder.mockResolvedValueOnce({ success: false, error: '保存失败' })
+
+    const wrapper = mount(DevPluginSidebar, {
+      props: {
+        selectedPluginId: 'rabbit-screenshot'
+      }
+    })
+
+    await flushPromises()
+    await wrapper.find('.dev-plugin-context-menu-stub__pin').trigger('click')
+    await flushPromises()
+
+    expect(messageErrorMock).toHaveBeenCalledWith('保存失败')
+    expect(mockGetDevProjects).toHaveBeenCalledTimes(2)
+    expect(wrapper.findAll('.sidebar__item-text')[0]?.text()).toBe('兔灵截图工具')
   })
 })

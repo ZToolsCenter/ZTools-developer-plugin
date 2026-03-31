@@ -39,6 +39,8 @@ export interface HostDevProject {
   isDevModeInstalled: boolean
   /** 插件安装时间。 */
   installedAt?: string
+  /** 跨设备共享的展示顺序。 */
+  sortOrder?: number
 }
 
 /**
@@ -86,6 +88,8 @@ export interface HostInternalAccess extends HostAccess {
   installDevPlugin?(pluginName: string): Promise<HostActionResult>
   /** 将当前工程从开发模式卸载。 */
   uninstallDevPlugin?(pluginName: string): Promise<HostActionResult>
+  /** 更新开发项目的共享展示顺序。 */
+  updateDevProjectsOrder?(pluginNames: string[]): Promise<HostActionResult>
 }
 
 /**

@@ -25,8 +25,44 @@ const normalizeDevelopmentPlugins = (
       lastValidatedAt: plugin.lastValidatedAt || null,
       lastError: plugin.lastError || null,
       isRunning: Boolean(plugin.isRunning || (plugin.path && runningPluginPaths.includes(plugin.path))),
-      isDevModeInstalled: Boolean(plugin.isDevModeInstalled)
+      isDevModeInstalled: Boolean(plugin.isDevModeInstalled),
+      sortOrder: plugin.sortOrder
     }))
+}
+
+/**
+ * 生成提交给宿主的完整开发项目顺序载荷。
+ */
+export function buildDevProjectsOrderPayload(plugins: HomePlugin[]): string[] {
+  return plugins.map((plugin) => plugin.id)
+}
+
+/**
+ * 将指定插件移动到当前列表顶部。
+ */
+export function movePluginToTop(plugins: HomePlugin[], pluginId: string): HomePlugin[] {
+  const targetPlugin = plugins.find((plugin) => plugin.id === pluginId)
+  if (!targetPlugin) {
+    return [...plugins]
+  }
+
+  return [targetPlugin, ...plugins.filter((plugin) => plugin.id !== pluginId)]
+}
+
+/**
+ * 根据目标 id 顺序重建完整插件列表，未命中的项保持原相对顺序并追加到末尾。
+ */
+export function reorderPluginsByIds(plugins: HomePlugin[], orderedIds: string[]): HomePlugin[] {
+  const pluginMap = new Map(plugins.map((plugin) => [plugin.id, plugin]))
+  const reorderedPlugins = orderedIds
+    .map((pluginId) => pluginMap.get(pluginId))
+    .filter((plugin): plugin is HomePlugin => Boolean(plugin))
+  const orderedSet = new Set(reorderedPlugins.map((plugin) => plugin.id))
+
+  return [
+    ...reorderedPlugins,
+    ...plugins.filter((plugin) => !orderedSet.has(plugin.id))
+  ]
 }
 
 /**
@@ -63,6 +99,22 @@ export interface DevPluginSidebarEmits {
 export interface DevPluginSidebarExpose {
   /** 主动刷新当前开发项目列表。 */
   refreshPlugins: () => Promise<void>
+}
+
+/**
+ * 将最新顺序持久化到宿主主记录。
+ */
+export async function updateDevelopmentPluginsOrder(pluginIds: string[]): Promise<void> {
+  const hostInternal = window.ztools?.internal
+
+  if (!hostInternal?.updateDevProjectsOrder) {
+    throw new Error('当前宿主不支持更新开发项目顺序')
+  }
+
+  const result = await hostInternal.updateDevProjectsOrder(pluginIds)
+  if (!result?.success) {
+    throw new Error(result?.error || '保存开发项目顺序失败')
+  }
 }
 
 /**

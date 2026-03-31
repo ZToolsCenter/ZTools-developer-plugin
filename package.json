@@ -18,11 +18,14 @@
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
-    "@xiaou66/u-element-plus": "^0.0.15",
+    "@xiaou66/u-element-plus": "^0.0.16",
+    "@xiaou66/u-styles": "^0.0.14",
     "element-plus": "^2.13.6",
     "pinia": "^3.0.4",
+    "pinyin-match": "^1.2.10",
     "unocss": "^66.6.7",
     "vue": "^3.5.30",
+    "vue-draggable-plus": "^0.6.1",
     "vue-router": "^5.0.3"
   },
   "devDependencies": {

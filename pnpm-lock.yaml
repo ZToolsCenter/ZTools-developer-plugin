@@ -12,20 +12,29 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(vue@3.5.31(typescript@5.9.3))
       '@xiaou66/u-element-plus':
-        specifier: ^0.0.15
-        version: 0.0.15(element-plus@2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))
+        specifier: ^0.0.16
+        version: 0.0.16(element-plus@2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))
+      '@xiaou66/u-styles':
+        specifier: ^0.0.14
+        version: 0.0.14
       element-plus:
         specifier: ^2.13.6
         version: 2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
+      pinyin-match:
+        specifier: ^1.2.10
+        version: 1.2.10
       unocss:
         specifier: ^66.6.7
         version: 66.6.7(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(less@4.6.4)(yaml@2.8.3))
       vue:
         specifier: ^3.5.30
         version: 3.5.31(typescript@5.9.3)
+      vue-draggable-plus:
+        specifier: ^0.6.1
+        version: 0.6.1(@types/sortablejs@1.15.9)
       vue-router:
         specifier: ^5.0.3
         version: 5.0.4(@vue/compiler-sfc@3.5.31)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))
@@ -1197,6 +1206,9 @@ packages:
   '@types/node@24.12.0':
     resolution: {integrity: sha512-GYDxsZi3ChgmckRT9HPU0WEhKLP08ev/Yfcq2AstjrDASOYCSXeyjDsHg4v5t4jOj7cyDX3vmprafKlWIG9MXQ==}
 
+  '@types/sortablejs@1.15.9':
+    resolution: {integrity: sha512-7HP+rZGE2p886PKV9c9OJzLBI6BBJu1O7lJGYnPyG3fS4/duUCcngkNCjsLwIMV+WMqANe3tt4irrXHSIe68OQ==}
+
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
@@ -1545,8 +1557,8 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
-  '@xiaou66/u-element-plus@0.0.15':
-    resolution: {integrity: sha512-RLYw3pjRSaB9bJjEH1qNyRuh0xSO6fTlI+4sPfD+iCQb2SI+X5zkN0lvLtw2zhVPpdrEJvXfingE8JMUmP20ww==}
+  '@xiaou66/u-element-plus@0.0.16':
+    resolution: {integrity: sha512-gN40TfGzNEPKfyglTFKekqqU6zJeox5LA3XWWeQ7NGArDOAfHe+YKTND7dYHgGtS7KMeGu/RtE1DSNcPWckV0w==}
     peerDependencies:
       element-plus: ^2.13.0
       vue: ^3.5.17
@@ -2430,6 +2442,9 @@ packages:
       typescript:
         optional: true
 
+  pinyin-match@1.2.10:
+    resolution: {integrity: sha512-Xo1uMd9n56/xP2EAn7yfApnTmAGCLGqxFIm1fuOnSMty0xhqRF3+ZwVjp2yWFD/alv60RUWa/cZoQSeTSp1HxA==}
+
   pkg-types@1.3.1:
     resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==}
 
@@ -2882,6 +2897,15 @@ packages:
 
   vue-component-type-helpers@3.2.6:
     resolution: {integrity: sha512-O02tnvIfOQVmnvoWwuSydwRoHjZVt8UEBR+2p4rT35p8GAy5VTlWP8o5qXfJR/GWCN0nVZoYWsVUvx2jwgdBmQ==}
+
+  vue-draggable-plus@0.6.1:
+    resolution: {integrity: sha512-FbtQ/fuoixiOfTZzG3yoPl4JAo9HJXRHmBQZFB9x2NYCh6pq0TomHf7g5MUmpaDYv+LU2n6BPq2YN9sBO+FbIg==}
+    peerDependencies:
+      '@types/sortablejs': ^1.15.0
+      '@vue/composition-api': '*'
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
 
   vue-eslint-parser@10.4.0:
     resolution: {integrity: sha512-Vxi9pJdbN3ZnVGLODVtZ7y4Y2kzAAE2Cm0CZ3ZDRvydVYxZ6VrnBhLikBsRS+dpwj4Jv4UCv21PTEwF5rQ9WXg==}
@@ -3801,6 +3825,8 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@types/sortablejs@1.15.9': {}
+
   '@types/tough-cookie@4.0.5': {}
 
   '@types/web-bluetooth@0.0.20': {}
@@ -4332,7 +4358,7 @@ snapshots:
     dependencies:
       vue: 3.5.31(typescript@5.9.3)
 
-  '@xiaou66/u-element-plus@0.0.15(element-plus@2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))':
+  '@xiaou66/u-element-plus@0.0.16(element-plus@2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3)))(vue@3.5.31(typescript@5.9.3))':
     dependencies:
       '@xiaou66/u-styles': 0.0.14
       element-plus: 2.13.6(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
@@ -5257,6 +5283,8 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
+  pinyin-match@1.2.10: {}
+
   pkg-types@1.3.1:
     dependencies:
       confbox: 0.1.8
@@ -5719,6 +5747,10 @@ snapshots:
   vue-component-type-helpers@2.2.12: {}
 
   vue-component-type-helpers@3.2.6: {}
+
+  vue-draggable-plus@0.6.1(@types/sortablejs@1.15.9):
+    dependencies:
+      '@types/sortablejs': 1.15.9
 
   vue-eslint-parser@10.4.0(eslint@10.1.0(jiti@2.6.1)):
     dependencies:

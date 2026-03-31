@@ -39,6 +39,8 @@ export interface HomePlugin {
   isRunning: boolean
   /** 插件是否已安装开发模式。 */
   isDevModeInstalled: boolean
+  /** 跨设备共享的展示顺序。 */
+  sortOrder?: number
 }
 
 /**
