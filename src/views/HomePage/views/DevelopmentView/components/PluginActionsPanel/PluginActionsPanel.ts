@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { logError, logInfo, logWarn } from '@/utils/logger'
-import { showErrorMessage } from '@/utils/message'
+import {showErrorMessage, showMessage} from '@/utils/message'
 import type { HostActionResult, HostInternalAccess } from '@/utils/host'
 import type { DevelopmentPluginOverview } from '../../DevelopmentView'
 
@@ -403,6 +403,7 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     try {
       ensureActionSuccess(await hostInternal.reloadDevProject(props.plugin.name), '重载失败')
       logInfo('PluginActionsPanel', '重载插件', `重载完成: ${props.plugin.name}`)
+      showMessage('重载插件成功', 'success')
       notifyUpdated()
     } catch (error) {
       logError(

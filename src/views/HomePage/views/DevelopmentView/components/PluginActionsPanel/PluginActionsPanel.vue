@@ -115,7 +115,7 @@ const {
       <CardAtom
         title="重载插件"
         :description="reloadDescription"
-        icon-class="i-u-rotate-cw"
+        icon-class="i-u-redo"
         icon-tone="success"
         :status="isReloading ? '重载中…' : ''"
         :clickable="true"

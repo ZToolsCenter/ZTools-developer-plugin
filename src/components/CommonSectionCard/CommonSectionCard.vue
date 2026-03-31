@@ -19,7 +19,7 @@ defineProps<CommonSectionCardProps>()
 <style scoped>
 .common-section-card {
   border-radius: 8px;
-  background: var(--u-color-bg-4);
+  background: var(--u-color-fill-2);
   padding: 20px;
 }
 

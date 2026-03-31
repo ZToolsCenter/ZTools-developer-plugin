@@ -130,7 +130,7 @@ defineExpose<DevPluginSidebarExpose>({
   gap: 8px;
   //background: var(--u-color-bg-3);
   padding: 8px 0 14px;
-  //border-right: 1px solid var(--u-color-fill-1);
+  border-right: 1px solid rgba(var(--u-gray-5), 0.4);
 }
 
 .sidebar__list-scrollbar {
@@ -147,7 +147,7 @@ defineExpose<DevPluginSidebarExpose>({
   flex: 1;
   min-height: 0;
   gap: 6px;
-  padding: 4px;
+  padding: 8px;
 }
 
 .sidebar__item {
@@ -163,14 +163,15 @@ defineExpose<DevPluginSidebarExpose>({
   cursor: pointer;
   padding: 10px;
   text-align: left;
+  transition: background-color 250ms linear;
 }
 
 .sidebar__item:hover {
-  background: var(--u-color-fill-3);
+  background-color: var(--u-color-fill-2);
 }
 
 .sidebar__item--active {
-  background: var(--u-color-fill-3);
+  background-color: var(--u-color-fill-2);
   color: var(--u-color-text-1);
 }
 
