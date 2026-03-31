@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { logInfo, logWarn } from '@/utils/logger'
@@ -11,7 +12,7 @@ import {
   type HomePlugin,
   type PluginInstallerJumpFunction
 } from './HomePage'
-import {useJumpFunction} from "@/composables";
+import { useJumpFunction } from '@/composables'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +23,10 @@ const plugins = ref<HomePlugin[]>([])
 const isPageLoading = ref(true)
 // 侧边栏实例引用，用于主动触发刷新。
 const sidebarRef = ref<DevPluginSidebarExpose | null>(null)
+// 成功导入后等待刷新完成再定向的目标插件。
+const pendingPluginId = ref('')
+// 防止同一时刻重复消费 jump 导入请求。
+const isHandlingJumpInstall = ref(false)
 
 // 当前路由中的插件标识。
 const selectedPluginId = computed(() => {
@@ -64,6 +69,23 @@ const handlePluginsLoaded = async (nextPlugins: HomePlugin[]): Promise<void> => 
   plugins.value = nextPlugins
   isPageLoading.value = false
   logInfo('HomePage', '初始化', `开发中插件数量: ${nextPlugins.length}`)
+
+  if (pendingPluginId.value) {
+    const targetPlugin = nextPlugins.find((plugin) => plugin.id === pendingPluginId.value)
+    if (targetPlugin) {
+      const nextPluginId = pendingPluginId.value
+      pendingPluginId.value = ''
+      await router.replace({
+        name: HOME_ROUTE_NAMES.development,
+        params: {
+          pluginId: nextPluginId
+        }
+      })
+      return
+    }
+    pendingPluginId.value = ''
+  }
+
   await ensureValidPluginRoute()
 }
 
@@ -83,6 +105,35 @@ const handleRefreshDevProjects = async (): Promise<void> => {
   await sidebarRef.value?.refreshPlugins()
 }
 
+const handleJumpInstall = async (installFilePath?: string): Promise<void> => {
+  if (!installFilePath || isHandlingJumpInstall.value) {
+    return
+  }
+
+  const hostInternal = window.ztools?.internal
+  if (!hostInternal?.upsertDevProjectByConfigPath) {
+    ElMessage.error('当前宿主不支持导入开发项目')
+    return
+  }
+
+  isHandlingJumpInstall.value = true
+
+  try {
+    const result = await hostInternal.upsertDevProjectByConfigPath(installFilePath)
+    if (!result?.success || !result.pluginName) {
+      ElMessage.error(result?.error || '导入开发项目失败')
+      return
+    }
+
+    pendingPluginId.value = result.pluginName
+    await sidebarRef.value?.refreshPlugins()
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '导入开发项目失败')
+  } finally {
+    isHandlingJumpInstall.value = false
+  }
+}
+
 watch(
   () => [selectedPluginId.value, plugins.value.length] as const,
   async () => {
@@ -94,7 +145,7 @@ watch(
 
 // 跳转
 useJumpFunction<PluginInstallerJumpFunction>((state) => {
-  console.log(state.installFilePath);
+  void handleJumpInstall(state.installFilePath)
 })
 </script>
 

@@ -46,8 +46,8 @@ const { isDragging, isSubmitting, handleDrop, submitConfigPath } = useMissingCon
   width: 100%;
   align-items: center;
   gap: 16px;
-  border-radius: 8px;
-  background: var(--u-color-bg-1);
+  //border-radius: 8px;
+  background: transparent;
   color: inherit;
   font: inherit;
   padding: 12px;
@@ -56,6 +56,8 @@ const { isDragging, isSubmitting, handleDrop, submitConfigPath } = useMissingCon
     border-color 0.2s ease,
     background-color 0.2s ease,
     box-shadow 0.2s ease;
+  outline: none;
+  border: none;
 }
 
 .missing-config-binding-card:hover:not(:disabled) {
@@ -64,9 +66,7 @@ const { isDragging, isSubmitting, handleDrop, submitConfigPath } = useMissingCon
 }
 
 .missing-config-binding-card--dragging {
-  border-color: var(--u-color-primary-6);
-  background: color-mix(in srgb, var(--u-color-primary-light-1) 55%, var(--u-color-bg-1));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--u-color-primary-6) 24%, transparent);
+  background: var(--u-color-fill-3);
 }
 
 .missing-config-binding-card--submitting {

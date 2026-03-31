@@ -82,6 +82,8 @@ export interface HostInternalAccess extends HostAccess {
   revealInFinder?(pluginPath: string): Promise<void>
   /** 导入开发中的插件配置。 */
   importDevPlugin?(pluginJsonPath?: string): Promise<HostActionResult>
+  /** 根据 plugin.json 路径执行新建或更新当前设备绑定。 */
+  upsertDevProjectByConfigPath?(pluginJsonPath: string): Promise<HostActionResult>
   /** 从开发项目列表中移除指定项目，但保留磁盘目录。 */
   removeDevProject?(pluginName: string): Promise<HostActionResult>
   /** 将当前工程安装为开发模式插件。 */

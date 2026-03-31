@@ -86,9 +86,12 @@ export interface PluginInstallerJumpFunction {
  * @param config 路由状态参数
  */
 export function jumpFunctionPluginInstaller(config: PluginInstallerJumpFunction): void {
+  const currentRoute = router.currentRoute.value
+  const isHomeRoute = typeof currentRoute.path === 'string' && currentRoute.path.startsWith('/home')
+
   void router.replace({
-    name: 'PluginInstaller',
-    query: { _t: Date.now() },
+    path: isHomeRoute ? currentRoute.path : '/home',
+    query: { ...currentRoute.query, _t: Date.now() },
     state: { ...config }
   })
 }

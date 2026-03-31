@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { defineComponent, h, nextTick, onMounted } from 'vue'
-const { sidebarState } = vi.hoisted(() => ({
+const { sidebarState, messageErrorMock } = vi.hoisted(() => ({
   sidebarState: {
     plugins: [] as Array<{
       id: string
@@ -19,6 +19,26 @@ const { sidebarState } = vi.hoisted(() => ({
     }>,
     refreshCalls: 0,
   },
+  messageErrorMock: vi.fn()
+}))
+
+vi.mock('element-plus', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('element-plus')>()
+  return {
+    ...actual,
+    ElMessage: {
+      ...actual.ElMessage,
+      error: messageErrorMock
+    }
+  }
+})
+
+vi.mock('@/composables', () => ({
+  useJumpFunction: (handler: (state: Record<string, unknown>) => void) => {
+    onMounted(() => {
+      handler((window.history.state as Record<string, unknown>) ?? {})
+    })
+  }
 }))
 
 vi.mock('@/views/HomePage/components/DevPluginSidebar', () => ({
@@ -137,6 +157,18 @@ function createHomeRouter() {
 describe('HomePage', () => {
   beforeEach(() => {
     sidebarState.refreshCalls = 0
+    messageErrorMock.mockReset()
+    window.history.replaceState({}, '', '#/')
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false,
+      media: '(prefers-color-scheme: dark)',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn()
+    }) as typeof window.matchMedia
     sidebarState.plugins = [
       {
         id: 'rabbit-screenshot',
@@ -295,5 +327,92 @@ describe('HomePage', () => {
     await flushPromises()
 
     expect(sidebarState.refreshCalls).toBe(1)
+  })
+
+  it('refreshes sidebar and routes to the imported project after jump install succeeds', async () => {
+    const upsertDevProjectByConfigPath = vi.fn().mockResolvedValue({
+      success: true,
+      pluginName: 'new-plugin'
+    })
+
+    window.ztools = {
+      internal: {
+        getDevProjects: vi.fn().mockResolvedValue([]),
+        getRunningPlugins: vi.fn().mockResolvedValue([]),
+        upsertDevProjectByConfigPath
+      }
+    }
+
+    sidebarState.plugins = [
+      {
+        id: 'new-plugin',
+        name: 'new-plugin',
+        title: '新插件',
+        version: '1.0.0',
+        path: '/mock/new-plugin',
+        configPath: '/mock/new-plugin/plugin.json',
+        localStatus: 'ready',
+        lastValidatedAt: null,
+        lastError: null,
+        isRunning: false,
+        isDevModeInstalled: false
+      }
+    ]
+
+    window.history.replaceState({ installFilePath: '/mock/new-plugin/plugin.json' }, '', '#/home')
+
+    const router = createHomeRouter()
+    await router.push('/home')
+    await router.isReady()
+
+    mount(HomePage, {
+      global: {
+        plugins: [router]
+      }
+    })
+
+    await flushPromises()
+    await nextTick()
+
+    expect(upsertDevProjectByConfigPath).toHaveBeenCalledWith('/mock/new-plugin/plugin.json')
+    expect(router.currentRoute.value.fullPath).toBe('/home/new-plugin/development')
+  })
+
+  it('shows error and keeps current route when jump install fails', async () => {
+    const upsertDevProjectByConfigPath = vi.fn().mockResolvedValue({
+      success: false,
+      error: 'plugin.json 格式错误'
+    })
+
+    window.ztools = {
+      internal: {
+        getDevProjects: vi.fn().mockResolvedValue([]),
+        getRunningPlugins: vi.fn().mockResolvedValue([]),
+        upsertDevProjectByConfigPath
+      }
+    }
+
+    window.history.replaceState(
+      { installFilePath: '/mock/broken/plugin.json' },
+      '',
+      '#/home/rabbit-screenshot/development'
+    )
+
+    const router = createHomeRouter()
+    await router.push('/home/rabbit-screenshot/development')
+    await router.isReady()
+
+    mount(HomePage, {
+      global: {
+        plugins: [router]
+      }
+    })
+
+    await flushPromises()
+    await nextTick()
+
+    expect(upsertDevProjectByConfigPath).toHaveBeenCalledWith('/mock/broken/plugin.json')
+    expect(messageErrorMock).toHaveBeenCalledWith('plugin.json 格式错误')
+    expect(router.currentRoute.value.fullPath).toBe('/home/rabbit-screenshot/development')
   })
 })
