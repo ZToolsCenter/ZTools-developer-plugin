@@ -5,7 +5,12 @@ import { logInfo, logWarn } from '@/utils/logger'
 import { DevPluginSidebar } from './components/DevPluginSidebar'
 import type { DevPluginSidebarExpose } from './components/DevPluginSidebar/DevPluginSidebar'
 import { WorkbenchNav } from './components/WorkbenchNav'
-import { HOME_ROUTE_NAMES, resolveHomeTab, type HomePlugin } from './HomePage'
+import {
+  HOME_ROUTE_NAMES,
+  resolveHomeTab,
+  type HomePlugin,
+  type PluginInstallerJumpFunction
+} from './HomePage'
 import {useJumpFunction} from "@/composables";
 
 const route = useRoute()
@@ -88,8 +93,8 @@ watch(
 )
 
 // 跳转
-useJumpFunction((state) => {
-
+useJumpFunction<PluginInstallerJumpFunction>((state) => {
+  console.log(state.installFilePath);
 })
 </script>
 

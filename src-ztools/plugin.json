@@ -14,7 +14,7 @@
     {
       "code": "ui.router",
       "explain": "zTools 开发者工具",
-      "cmds": ["开发者工具", "开发工作台", "开发中插件"]
+      "cmds": ["开发者工具"]
     },
     {
       "code": "function.add-dev-plugin",
