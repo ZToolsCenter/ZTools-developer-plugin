@@ -6,6 +6,7 @@ import { DevPluginSidebar } from './components/DevPluginSidebar'
 import type { DevPluginSidebarExpose } from './components/DevPluginSidebar/DevPluginSidebar'
 import { WorkbenchNav } from './components/WorkbenchNav'
 import { HOME_ROUTE_NAMES, resolveHomeTab, type HomePlugin } from './HomePage'
+import {useJumpFunction} from "@/composables";
 
 const route = useRoute()
 const router = useRouter()
@@ -85,6 +86,11 @@ watch(
     }
   }
 )
+
+// 跳转
+useJumpFunction((state) => {
+
+})
 </script>
 
 <template>

@@ -32,6 +32,31 @@ export default defineConfigWithVueTs(
     files: ['src/**/__tests__/*'],
   },
 
+  {
+    files: ['**/*.{ts,mts,tsx,vue}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_'
+        }
+      ],
+      'vue/require-default-prop': 'off',
+      'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      'vue/block-lang': [
+        'error',
+        {
+          script: {
+            lang: 'ts'
+          }
+        }
+      ]
+    }
+  },
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 
   skipFormatting,

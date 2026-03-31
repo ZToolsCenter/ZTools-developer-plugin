@@ -17,7 +17,7 @@
       "cmds": ["开发者工具", "开发工作台", "开发中插件"]
     },
     {
-      "code": "function.add-dev-plugin?router=Plugins",
+      "code": "function.add-dev-plugin",
       "explain": "添加开发中插件",
       "icon": "logo.png",
       "cmds": [
