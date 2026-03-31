@@ -9,11 +9,11 @@ export default defineConfig({
     filesystem: ['src/**/*.{vue,js,ts}'],
   },
   safelist: [
-    'i-u-development',
-    'i-u-history',
-    'i-u-feedback',
-    'i-u-services',
-    'i-u-team',
+    'i-z-development',
+    'i-z-history',
+    'i-z-feedback',
+    'i-z-services',
+    'i-z-team',
   ],
   presets: [
     presetWind3(),
@@ -21,14 +21,6 @@ export default defineConfig({
     presetTypography(),
     presetIcons({
       collections: {
-        u: FileSystemIconLoader(
-          fileURLToPath(new URL('./src/assets/icons', import.meta.url)),
-          (svg) => {
-            return svg
-              .replace(/(<svg.*?fill=)"(?!none)(.*?)"/, '$1"currentColor"')
-              .replace(/(<svg.*?stroke=)"(?!none)(.*?)"/, '$1"currentColor"');
-          }
-        ),
         z: FileSystemIconLoader(
           fileURLToPath(new URL('./src/assets/icons', import.meta.url)),
           (svg) => {

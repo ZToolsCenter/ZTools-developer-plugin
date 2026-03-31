@@ -42,7 +42,7 @@ const {
       <CardAtom
         :description="configStatusDescription"
         :status="configStatusMeta"
-        icon-class="i-u-services"
+        icon-class="i-z-services"
         icon-tone="muted"
       >
         <template #title>
@@ -63,7 +63,7 @@ const {
       <CardAtom
         v-else
         title="工程目录"
-        icon-class="i-u-folder-open"
+        icon-class="i-z-folder-open"
         icon-tone="muted"
         :status="isOpeningFolder ? '打开中…' : ''"
         :clickable="true"
@@ -115,7 +115,7 @@ const {
       <CardAtom
         title="重载插件"
         :description="reloadDescription"
-        icon-class="i-u-redo"
+        icon-class="i-z-redo"
         icon-tone="success"
         :status="isReloading ? '重载中…' : ''"
         :clickable="true"
@@ -126,7 +126,7 @@ const {
         v-if="showSelectConfig"
         title="选择配置文件"
         :description="selectConfigDescription"
-        icon-class="i-u-folder"
+        icon-class="i-z-folder"
         icon-tone="primary"
         :status="selectConfigStatus"
         :clickable="true"
@@ -136,7 +136,7 @@ const {
       <CardAtom
         title="打包插件"
         :description="packageDescription"
-        icon-class="i-u-package"
+        icon-class="i-z-package"
         icon-tone="primary"
         :status="isPackaging ? '打包中…' : ''"
         :clickable="true"

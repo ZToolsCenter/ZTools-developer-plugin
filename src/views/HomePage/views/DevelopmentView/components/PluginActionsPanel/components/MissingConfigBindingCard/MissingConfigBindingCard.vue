@@ -29,7 +29,7 @@ const { isDragging, isSubmitting, handleDrop, submitConfigPath } = useMissingCon
     @dragleave.prevent="isDragging = false"
     @drop="handleDrop"
   >
-    <span class="missing-config-binding-card__icon i-u-folder-open" aria-hidden="true" />
+    <span class="missing-config-binding-card__icon i-z-folder-open" aria-hidden="true" />
 
     <span class="missing-config-binding-card__content">
       <span class="missing-config-binding-card__title">导入源码工程</span>

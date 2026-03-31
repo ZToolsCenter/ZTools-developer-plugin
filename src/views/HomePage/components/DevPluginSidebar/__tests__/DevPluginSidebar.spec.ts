@@ -12,9 +12,16 @@ vi.mock('element-plus/theme-chalk/el-scrollbar.css', () => ({}))
 vi.mock('element-plus/es/components/scrollbar/style/css', () => ({}))
 
 vi.mock('element-plus', () => ({
-  ElMessage: {
-    error: messageErrorMock
-  },
+  ElMessage: Object.assign(
+    vi.fn(({ message, type }) => {
+      if (type === 'error') {
+        messageErrorMock(message)
+      }
+    }),
+    {
+      error: messageErrorMock
+    }
+  ),
   ElScrollbar: defineComponent({
     name: 'ElScrollbar',
     setup(_, { slots }) {
@@ -135,6 +142,19 @@ describe('DevPluginSidebar', () => {
 
     expect(wrapper.find('.sidebar__list-scrollbar').exists()).toBe(true)
     expect(wrapper.find('.el-scrollbar').exists()).toBe(true)
+  })
+
+  it('renders sidebar icons with the z icon namespace', async () => {
+    const wrapper = mount(DevPluginSidebar, {
+      props: {
+        selectedPluginId: 'rabbit-screenshot'
+      }
+    })
+
+    await flushPromises()
+
+    expect(wrapper.find('.sidebar__item-icon.i-z-folder').exists()).toBe(true)
+    expect(wrapper.find('.sidebar__create-icon.i-z-plus').exists()).toBe(true)
   })
 
   it('renders dev projects even when the host payload omits isDevelopment', async () => {

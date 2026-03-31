@@ -24,14 +24,14 @@ const { displayAuthor, displayVersion, displayDescription, handleRemoveProject }
                        trigger="click"
                        size="small"
                        popper-class="u-dropdown-popper u-dropdown-popper__small">
-            <div class="i-u-more w-5 h-5"></div>
+            <div class="i-z-more w-5 h-5"></div>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item class="flex justify-center"
                                   @click="handleRemoveProject">
                   <div class="flex items-center w-full gap-2"
                        style="color: rgb(var(--u-red-5))">
-                    <div class="i-u-delete w-4 h-4"/>
+                    <div class="i-z-delete w-4 h-4"/>
                     <div>删除</div>
                   </div>
                 </el-dropdown-item>

@@ -17,7 +17,8 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
-    "@xiaou66/u-element-plus": "^0.0.17",
+    "@vueuse/core": "^14.2.1",
+    "@xiaou66/u-element-plus": "^0.0.15",
     "element-plus": "^2.13.6",
     "pinia": "^3.0.4",
     "unocss": "^66.6.7",

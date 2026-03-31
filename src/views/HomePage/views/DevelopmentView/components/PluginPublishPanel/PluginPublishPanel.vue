@@ -8,7 +8,7 @@ import { pluginPublishPanelContent } from './PluginPublishPanel'
     <CardAtom
       :title="pluginPublishPanelContent.title"
       :description="pluginPublishPanelContent.description"
-      icon-class="i-u-globe"
+      icon-class="i-z-globe"
       icon-tone="muted"
     />
   </CardGroup>

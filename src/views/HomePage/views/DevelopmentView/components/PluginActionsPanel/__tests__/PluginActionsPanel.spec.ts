@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PluginActionsPanel from '../PluginActionsPanel.vue'
 
@@ -7,9 +8,25 @@ const { messageErrorMock } = vi.hoisted(() => ({
 }))
 
 vi.mock('element-plus', () => ({
-  ElMessage: {
-    error: messageErrorMock
-  }
+  ElMessage: Object.assign(
+    vi.fn(({ message, type }) => {
+      if (type === 'error') {
+        messageErrorMock(message)
+      }
+    }),
+    {
+      error: messageErrorMock
+    }
+  ),
+  ElTooltip: defineComponent({
+    name: 'ElTooltip',
+    setup(_, { slots }) {
+      return () => h('div', { class: 'el-tooltip' }, [
+        slots.default?.(),
+        slots.content?.()
+      ])
+    }
+  })
 }))
 
 const findCardByTitle = (wrapper: ReturnType<typeof mount>, title: string) => {
@@ -191,5 +208,16 @@ describe('PluginActionsPanel', () => {
 
     expect(selectDevProjectConfig).toHaveBeenCalledWith(basePlugin.name)
     expect(wrapper.emitted('updated')).toHaveLength(1)
+  })
+
+  it('renders action panel icons with the z icon namespace', () => {
+    const wrapper = mount(PluginActionsPanel, {
+      props: {
+        plugin: basePlugin
+      }
+    })
+
+    expect(wrapper.find('.i-z-folder-open').exists()).toBe(true)
+    expect(wrapper.find('.i-z-services').exists()).toBe(true)
   })
 })

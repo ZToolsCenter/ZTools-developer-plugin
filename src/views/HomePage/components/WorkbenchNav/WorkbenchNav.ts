@@ -29,27 +29,27 @@ export const workbenchNavItems: WorkbenchNavItem[] = [
   {
     tab: 'development',
     label: '应用开发',
-    iconClass: 'i-u-development'
+    iconClass: 'i-z-development'
   },
   {
     tab: 'history',
     label: '发布历史',
-    iconClass: 'i-u-history'
+    iconClass: 'i-z-history'
   },
   {
     tab: 'feedback',
     label: '用户留言',
-    iconClass: 'i-u-feedback'
+    iconClass: 'i-z-feedback'
   },
   {
     tab: 'services',
     label: '增值服务',
-    iconClass: 'i-u-services'
+    iconClass: 'i-z-services'
   },
   {
     tab: 'team',
     label: '团队协作',
-    iconClass: 'i-u-team'
+    iconClass: 'i-z-team'
   }
 ]
 

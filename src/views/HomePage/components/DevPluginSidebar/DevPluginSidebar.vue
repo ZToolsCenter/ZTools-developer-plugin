@@ -98,7 +98,7 @@ defineExpose<DevPluginSidebarExpose>({
           :class="{ 'sidebar__item--active': plugin.id === props.selectedPluginId }"
           @click="handleSelectPlugin(plugin.id)"
         >
-          <span class="sidebar__item-icon i-u-folder" aria-hidden="true" />
+          <span class="sidebar__item-icon i-z-folder" aria-hidden="true" />
           <span class="sidebar__item-content">
             <span class="sidebar__item-text">{{ plugin.title }}</span>
             <span class="sidebar__item-meta">{{ resolveSidebarPluginMeta(plugin) }}</span>
@@ -113,7 +113,7 @@ defineExpose<DevPluginSidebarExpose>({
       :disabled="isCreatingProject"
       @click="handleCreateProject"
     >
-      <span class="sidebar__create-icon i-u-plus" aria-hidden="true" />
+      <span class="sidebar__create-icon i-z-plus" aria-hidden="true" />
       <span>{{ isCreatingProject ? '导入中...' : '新建项目' }}</span>
     </button>
   </aside>
