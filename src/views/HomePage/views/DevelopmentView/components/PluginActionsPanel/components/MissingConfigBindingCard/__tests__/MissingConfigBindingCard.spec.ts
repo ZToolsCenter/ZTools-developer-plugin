@@ -27,7 +27,7 @@ describe('MissingConfigBindingCard', () => {
         getRunningPlugins: vi.fn(),
         selectDevProjectConfig
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(MissingConfigBindingCard, {
       props: { pluginName: 'excellent-todo' }
@@ -56,7 +56,7 @@ describe('MissingConfigBindingCard', () => {
         getRunningPlugins: vi.fn(),
         selectDevProjectConfig
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(MissingConfigBindingCard, {
       props: { pluginName: 'excellent-todo' }
@@ -82,7 +82,7 @@ describe('MissingConfigBindingCard', () => {
         getRunningPlugins: vi.fn(),
         selectDevProjectConfig
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(MissingConfigBindingCard, {
       props: { pluginName: 'excellent-todo' }

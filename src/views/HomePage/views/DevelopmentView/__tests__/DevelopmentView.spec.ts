@@ -64,7 +64,7 @@ describe('DevelopmentView', () => {
         getRunningPlugins: vi.fn().mockResolvedValue([]),
         validateDevProject
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: { plugin: mockPlugin }
@@ -95,7 +95,7 @@ describe('DevelopmentView', () => {
         installDevPlugin: vi.fn().mockResolvedValue({ success: true }),
         uninstallDevPlugin: vi.fn().mockResolvedValue({ success: true })
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: { plugin: mockPlugin }
@@ -128,7 +128,7 @@ describe('DevelopmentView', () => {
         validateDevProject,
         installDevPlugin
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: {
@@ -159,7 +159,7 @@ describe('DevelopmentView', () => {
         validateDevProject,
         uninstallDevPlugin
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: { plugin: mockPlugin }
@@ -186,7 +186,7 @@ describe('DevelopmentView', () => {
         validateDevProject,
         removeDevProject
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: { plugin: mockPlugin }
@@ -215,7 +215,7 @@ describe('DevelopmentView', () => {
         validateDevProject,
         removeDevProject
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(DevelopmentView, {
       props: { plugin: mockPlugin }

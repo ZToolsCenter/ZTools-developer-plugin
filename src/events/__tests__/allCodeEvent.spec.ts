@@ -65,7 +65,7 @@ describe('allCodeEvent reload-all-plugin', () => {
 
     window.ztools = {
       internal: hostInternal as any
-    }
+    } as unknown as typeof window.ztools
   })
 
   it('只重载已安装开发模式的项目，并汇总部分失败结果', async () => {
@@ -102,7 +102,7 @@ describe('allCodeEvent reload-all-plugin', () => {
       internal: {
         getDevProjects: vi.fn()
       } as any
-    }
+    } as unknown as typeof window.ztools
 
     dispatchReloadAllPluginEvent()
 
@@ -123,7 +123,7 @@ describe('allCodeEvent reload-all-plugin', () => {
           .mockRejectedValueOnce(new Error('crash'))
           .mockResolvedValueOnce({ success: true })
       } as any
-    }
+    } as unknown as typeof window.ztools
 
     dispatchReloadAllPluginEvent()
 

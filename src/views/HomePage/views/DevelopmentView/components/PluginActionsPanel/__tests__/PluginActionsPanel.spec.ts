@@ -61,7 +61,7 @@ describe('PluginActionsPanel', () => {
         getRunningPlugins: vi.fn(),
         revealInFinder: vi.fn()
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(PluginActionsPanel, {
       props: {
@@ -83,7 +83,7 @@ describe('PluginActionsPanel', () => {
         reloadDevProject: vi.fn(),
         packageDevProject: vi.fn().mockResolvedValue({ success: false, error: '打包失败' })
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(PluginActionsPanel, {
       props: {
@@ -105,7 +105,7 @@ describe('PluginActionsPanel', () => {
         getRunningPlugins: vi.fn(),
         selectDevProjectConfig: vi.fn().mockResolvedValue({ success: true })
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(PluginActionsPanel, {
       props: {
@@ -160,7 +160,7 @@ describe('PluginActionsPanel', () => {
         reloadDevProject,
         selectDevProjectConfig: vi.fn().mockResolvedValue({ success: true })
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(PluginActionsPanel, {
       props: {
@@ -191,7 +191,7 @@ describe('PluginActionsPanel', () => {
         getRunningPlugins: vi.fn(),
         selectDevProjectConfig
       }
-    }
+    } as unknown as typeof window.ztools
 
     const wrapper = mount(PluginActionsPanel, {
       props: {

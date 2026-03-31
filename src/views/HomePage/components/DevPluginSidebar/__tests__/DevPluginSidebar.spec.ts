@@ -3,9 +3,28 @@ import { defineComponent, h } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import DevPluginSidebar from '../DevPluginSidebar.vue'
 
-const { messageErrorMock } = vi.hoisted(() => ({
-  messageErrorMock: vi.fn()
-}))
+const { messageErrorMock } = vi.hoisted(() => {
+  const matchMediaMock = vi.fn().mockReturnValue({
+    matches: false,
+    media: '(prefers-color-scheme: dark)',
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
+  })
+
+  Object.defineProperty(globalThis, 'matchMedia', {
+    value: matchMediaMock,
+    writable: true,
+    configurable: true
+  })
+
+  return {
+    messageErrorMock: vi.fn()
+  }
+})
 
 vi.mock('element-plus/theme-chalk/base.css', () => ({}))
 vi.mock('element-plus/theme-chalk/el-scrollbar.css', () => ({}))
@@ -131,7 +150,6 @@ describe('DevPluginSidebar', () => {
     mockImportDevPlugin.mockReset()
     mockUpdateDevProjectsOrder.mockReset()
     messageErrorMock.mockClear()
-
     mockGetDevProjects.mockResolvedValueOnce([initialPlugin]).mockResolvedValueOnce([
       initialPlugin,
       importedPlugin
@@ -141,13 +159,16 @@ describe('DevPluginSidebar', () => {
     mockUpdateDevProjectsOrder.mockResolvedValue({ success: true })
 
     window.ztools = {
+      removeSubInput: vi.fn(),
+      setSubInput: vi.fn().mockReturnValue(true),
+      setSubInputValue: vi.fn(),
       internal: {
         getDevProjects: mockGetDevProjects,
         getRunningPlugins: mockGetRunningPlugins,
         importDevPlugin: mockImportDevPlugin,
         updateDevProjectsOrder: mockUpdateDevProjectsOrder
       }
-    }
+    } as unknown as typeof window.ztools
   })
 
   afterEach(() => {

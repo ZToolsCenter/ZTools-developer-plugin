@@ -225,7 +225,7 @@ describe('HomePage', () => {
         ]),
         getRunningPlugins: vi.fn().mockResolvedValue(['/mock/rabbit-screenshot'])
       }
-    }
+    } as unknown as typeof window.ztools
   })
 
   it('renders layout chrome with sidebar, nav, and router outlet', async () => {
@@ -293,7 +293,7 @@ describe('HomePage', () => {
         getDevProjects: vi.fn().mockRejectedValue(new Error('加载失败')),
         getRunningPlugins: vi.fn().mockResolvedValue([])
       }
-    }
+    } as unknown as typeof window.ztools
 
     const router = createHomeRouter()
     await router.push('/home')
@@ -366,7 +366,7 @@ describe('HomePage', () => {
         getRunningPlugins: vi.fn().mockResolvedValue([]),
         upsertDevProjectByConfigPath
       }
-    }
+    } as unknown as typeof window.ztools
 
     sidebarState.plugins = [
       {
@@ -415,7 +415,7 @@ describe('HomePage', () => {
         getRunningPlugins: vi.fn().mockResolvedValue([]),
         upsertDevProjectByConfigPath
       }
-    }
+    } as unknown as typeof window.ztools
 
     window.history.replaceState(
       { installFilePath: '/mock/broken/plugin.json' },

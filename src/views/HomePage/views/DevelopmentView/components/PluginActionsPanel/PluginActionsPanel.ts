@@ -266,6 +266,7 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
    * 解析当前动作卡片所使用的宿主接口。
    */
   function resolveHostInternal(): HostInternalAccess | undefined {
+    // @ts-ignore
     return window.ztools?.internal
   }
 
