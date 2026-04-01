@@ -18,6 +18,7 @@ export default defineConfig({
   server: {
     port: 8686,
     host: '0.0.0.0',
+    open: false,
   },
   build: {
     sourcemap: false,
