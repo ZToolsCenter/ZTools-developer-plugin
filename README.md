@@ -191,8 +191,6 @@ pnpm format
 当前项目中和 AI 协作相关的关键说明文件如下：
 
 - `AGENTS.md`
-- `docs/superpowers/specs/2026-03-28-pencil-homepage-migration-design.md`
-- `docs/superpowers/plans/2026-03-28-homepage-migration.md`
 - `.agents/skills/u-styles-variable-usage/SKILL.md`
 
 在修改页面结构、组件边界、主题变量或宿主 API 接入方式时，应同步更新这些文件，确保后续协作基于当前真实状态，而不是旧的脚手架描述。
