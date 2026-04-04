@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/@ztools-center/ztools-api-types/resource/ztools.schema.json",
-  "name": "zTools-developer-plugin",
-  "title": "zTools 开发者工具",
+  "name": "ztools-developer-plugin",
+  "title": "ZTools 开发者工具",
   "description": "ZTools 开发者插件",
   "author": "xiaou",
   "version": "1.0.0",
@@ -13,7 +13,7 @@
   "features": [
     {
       "code": "ui.router",
-      "explain": "zTools 开发者工具",
+      "explain": "ZTools 开发者工具",
       "cmds": ["开发者工具"]
     },
     {
