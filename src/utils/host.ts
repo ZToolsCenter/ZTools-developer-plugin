@@ -71,7 +71,7 @@ export interface HostAccess {
   /** 为开发项目重新选择配置文件。 */
   selectDevProjectConfig?(pluginName: string, configPath?: string): Promise<HostActionResult>
   /** 打包指定开发项目。 */
-  packageDevProject?(pluginName: string): Promise<HostActionResult>
+  packageDevProject?(pluginName: string, packagePath?: string, version?: string): Promise<HostActionResult>
 }
 
 /**

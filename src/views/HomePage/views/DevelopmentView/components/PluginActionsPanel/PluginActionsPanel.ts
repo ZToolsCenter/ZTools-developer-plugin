@@ -92,6 +92,18 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
    */
   const isPackaging = ref(false)
   /**
+   * 打包配置 dialog 是否显示。
+   */
+  const isPackageDialogVisible = ref(false)
+  /**
+   * 打包 dialog 中选定的打包目录路径。
+   */
+  const packageDialogPath = ref('')
+  /**
+   * 打包 dialog 中填写的版本号（留空表示沿用 plugin.json 中的版本）。
+   */
+  const packageDialogVersion = ref('')
+  /**
    * 当前项目是否已安装开发模式。
    */
   const isDevModeInstalled = computed(() => Boolean(props.plugin?.isDevModeInstalled))
@@ -457,6 +469,34 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
   }
 
   /**
+   * 打开打包配置 dialog，并将打包路径初始化为当前项目路径。
+   */
+  function handleOpenPackageDialog() {
+    if (!canPackage.value) {
+      return
+    }
+    packageDialogPath.value = props.plugin?.path ?? ''
+    packageDialogVersion.value = ''
+    isPackageDialogVisible.value = true
+  }
+
+  /**
+   * 调用宿主保存对话框让用户选择打包输出目录，并回填到 dialog 路径字段。
+   */
+  function handleSelectPackagePath() {
+    // @ts-ignore — window.ztools 由宿主在运行时注入，类型暂未纳入全局声明
+    const savePath = window.ztools?.showOpenDialog({
+      title: '选择打包目录',
+      defaultPath: packageDialogPath.value || props.plugin?.path || '',
+      buttonLabel: '选择',
+      properties: ['openDirectory']
+    })
+    if (savePath) {
+      packageDialogPath.value = savePath[0] || ''
+    }
+  }
+
+  /**
    * 请求宿主打包当前开发项目。
    */
   async function handlePackagePlugin() {
@@ -475,9 +515,16 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
       return
     }
 
+    const packagePath = packageDialogPath.value || undefined
+    const version = packageDialogVersion.value || undefined
+
     try {
-      ensureActionSuccess(await hostInternal.packageDevProject(props.plugin.name), '打包失败')
+      ensureActionSuccess(
+        await hostInternal.packageDevProject(props.plugin.name, packagePath, version),
+        '打包失败'
+      )
       logInfo('PluginActionsPanel', '打包插件', `打包完成 ${props.plugin.name}`)
+      isPackageDialogVisible.value = false
     } catch (error) {
       logError(
         'PluginActionsPanel',
@@ -502,11 +549,14 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     isDevModeInstalled,
     isOpenFolderDisabled: computed(() => isOpeningFolder.value || !canOpenFolder.value),
     isOpeningFolder,
+    isPackageDialogVisible,
     isPackageDisabled,
     isPackaging,
     isReloadDisabled,
     isReloading,
     packageDescription,
+    packageDialogPath,
+    packageDialogVersion,
     reloadDescription,
     selectConfigDescription,
     isSelectConfigDisabled,
@@ -514,9 +564,11 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     showMissingConfigBindingCard,
     showSelectConfig,
     handleOpenFolder,
+    handleOpenPackageDialog,
     handlePackagePlugin,
     handleReload,
     handleSelectConfig,
+    handleSelectPackagePath,
     handleToggleDevMode
   }
 }

@@ -31,26 +31,26 @@ export const workbenchNavItems: WorkbenchNavItem[] = [
     label: '应用开发',
     iconClass: 'i-z-development'
   },
-  {
-    tab: 'history',
-    label: '发布历史',
-    iconClass: 'i-z-history'
-  },
-  {
-    tab: 'feedback',
-    label: '用户留言',
-    iconClass: 'i-z-feedback'
-  },
-  {
-    tab: 'services',
-    label: '增值服务',
-    iconClass: 'i-z-services'
-  },
-  {
-    tab: 'team',
-    label: '团队协作',
-    iconClass: 'i-z-team'
-  }
+  // {
+  //   tab: 'history',
+  //   label: '发布历史',
+  //   iconClass: 'i-z-history'
+  // },
+  // {
+  //   tab: 'feedback',
+  //   label: '用户留言',
+  //   iconClass: 'i-z-feedback'
+  // },
+  // {
+  //   tab: 'services',
+  //   label: '增值服务',
+  //   iconClass: 'i-z-services'
+  // },
+  // {
+  //   tab: 'team',
+  //   label: '团队协作',
+  //   iconClass: 'i-z-team'
+  // }
 ]
 
 /**

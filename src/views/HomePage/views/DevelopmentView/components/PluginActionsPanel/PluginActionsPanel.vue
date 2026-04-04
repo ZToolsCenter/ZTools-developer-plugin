@@ -17,21 +17,26 @@ const {
   isDevModeInstalled,
   isOpenFolderDisabled,
   isOpeningFolder,
+  isPackageDialogVisible,
   isPackageDisabled,
   isPackaging,
   isReloadDisabled,
   isReloading,
   isSelectConfigDisabled,
   packageDescription,
+  packageDialogPath,
+  packageDialogVersion,
   reloadDescription,
   selectConfigDescription,
   selectConfigStatus,
   showMissingConfigBindingCard,
   showSelectConfig,
   handleOpenFolder,
+  handleOpenPackageDialog,
   handlePackagePlugin,
   handleReload,
   handleSelectConfig,
+  handleSelectPackagePath,
   handleToggleDevMode
 } = usePluginActionsPanel(props, emit)
 </script>
@@ -141,10 +146,43 @@ const {
         :status="isPackaging ? '打包中…' : ''"
         :clickable="true"
         :disabled="isPackageDisabled"
-        @click="handlePackagePlugin"
+        @click="handleOpenPackageDialog"
       />
     </CardGroup>
   </div>
+
+  <!-- 打包配置 dialog -->
+  <el-dialog
+    v-model="isPackageDialogVisible"
+    title="打包插件"
+    width="480px"
+    :close-on-click-modal="false"
+    :close-on-press-escape="!isPackaging"
+  >
+    <el-form label-position="top" size="default" class="package-dialog__form">
+      <el-form-item label="打包目录">
+        <div class="package-dialog__path-row">
+          <el-input
+            :model-value="packageDialogPath"
+            readonly
+            placeholder="默认为项目根目录"
+          />
+          <el-button @click="handleSelectPackagePath">选择</el-button>
+        </div>
+      </el-form-item>
+      <el-form-item label="版本号（可选）">
+        <el-input
+          v-model="packageDialogVersion"
+          placeholder="留空则沿用 plugin.json 中的版本号"
+          clearable
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button :disabled="isPackaging" @click="isPackageDialogVisible = false">取消</el-button>
+      <el-button type="primary" :loading="isPackaging" @click="handlePackagePlugin">开始打包</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -235,5 +273,16 @@ const {
   left: 6px;
   width: 2px;
   height: 14px;
+}
+
+.package-dialog__path-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.package-dialog__path-row .el-input {
+  flex: 1;
+  min-width: 0;
 }
 </style>
