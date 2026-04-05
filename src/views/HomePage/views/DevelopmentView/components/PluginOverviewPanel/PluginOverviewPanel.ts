@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { logError, logInfo, logWarn } from '@/utils/logger'
 import { showErrorMessage } from '@/utils/message'
@@ -49,10 +49,6 @@ export function usePluginOverviewPanel(
    * 宿主缺失应用标识时使用的兜底文案。
    */
   const displayPluginId = computed(() => props.plugin?.name ?? '--')
-  /**
-   * 宿主缺失版本号时使用的兜底文案。
-   */
-  const displayVersion = computed(() => props.plugin?.version ?? '--')
   /**
    * 宿主缺失描述信息时使用的兜底文案。
    */
@@ -119,11 +115,110 @@ export function usePluginOverviewPanel(
     }
   }
 
+  const displayPlatform = computed(() => {
+    const p = props.plugin?.platform
+    return Array.isArray(p) && p.length > 0 ? p.join(' / ') : ''
+  })
+
+  // ---- 编辑登记信息 ----
+  const isEditDialogVisible = ref(false)
+  const isEditing = ref(false)
+  const isRefreshing = ref(false)
+  const editForm = reactive({
+    name: '',
+    title: '',
+    description: '',
+    platform: [] as string[],
+    author: ''
+  })
+
+  function openEditDialog(): void {
+    editForm.name = props.plugin?.name ?? ''
+    editForm.title = props.plugin?.title ?? ''
+    editForm.description = props.plugin?.description ?? ''
+    editForm.platform = Array.isArray(props.plugin?.platform) ? [...props.plugin!.platform!] : []
+    editForm.author = props.plugin?.author ?? ''
+    isEditDialogVisible.value = true
+  }
+
+  async function handleRefreshProject(): Promise<void> {
+    if (!props.plugin?.name) return
+
+    const hostInternal = resolveHostInternal()
+    if (!hostInternal?.validateDevProject) {
+      showErrorMessage(undefined, '宿主服务不可用')
+      return
+    }
+
+    isRefreshing.value = true
+    try {
+      ensureActionSuccess(await hostInternal.validateDevProject(props.plugin.name), '刷新失败')
+      notifyUpdated()
+    } catch (error) {
+      logError('PluginOverviewPanel', '刷新项目', `失败: ${error instanceof Error ? error.message : 'unknown'}`)
+      showErrorMessage(error, '刷新项目信息失败')
+    } finally {
+      isRefreshing.value = false
+    }
+  }
+
+  async function handleUpdateMeta(form: { name: string; title: string; description: string; platform: string[]; author: string }): Promise<void> {
+    if (!props.plugin?.name) return
+
+    const hostInternal = resolveHostInternal()
+    if (!hostInternal?.updateDevProjectMeta) {
+      showErrorMessage(undefined, '宿主服务不可用')
+      return
+    }
+
+    isEditing.value = true
+    try {
+      const result = await hostInternal.updateDevProjectMeta(props.plugin.name, {
+        title: form.title,
+        description: form.description,
+        platform: [...form.platform],
+        author: form.author
+      })
+      ensureActionSuccess(result, '更新失败')
+      isEditDialogVisible.value = false
+      notifyUpdated()
+    } catch (error) {
+      logError('PluginOverviewPanel', '更新登记信息', `失败: ${error instanceof Error ? error.message : 'unknown'}`)
+      showErrorMessage(error, '更新登记信息失败')
+    } finally {
+      isEditing.value = false
+    }
+  }
+
+  // ---- 开发指南弹窗 ----
+  const isGuideDialogVisible = ref(false)
+
+  function openGuideDialog(): void {
+    isGuideDialogVisible.value = true
+  }
+
+  function openProjectFolder(): void {
+    const projectPath = props.plugin?.path
+    if (projectPath) {
+      window.ztools?.shellOpenPath(projectPath)
+    }
+  }
+
   return {
     displayAuthor,
     displayPluginId,
-    displayVersion,
     displayDescription,
+    displayPlatform,
     handleRemoveProject,
+    handleRefreshProject,
+    isRefreshing,
+    isEditDialogVisible,
+    isEditing,
+    editForm,
+    openEditDialog,
+    handleUpdateMeta,
+    isGuideDialogVisible,
+    openGuideDialog,
+    openProjectFolder,
   }
 }

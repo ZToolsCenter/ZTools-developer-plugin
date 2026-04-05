@@ -18,6 +18,8 @@ import {
 import type { HomePlugin } from '@/views/HomePage/HomePage'
 import { showErrorMessage, toDisplayMessage } from '@/utils/message'
 import { DevPluginContextMenu } from '@/views/HomePage/components/DevPluginContextMenu'
+import { ProjectMetaDialog } from '@/components'
+import { ConfettiOverlay } from '@/components'
 import {useZtoolsSubInput} from "@/composables";
 import PinyinMatch from 'pinyin-match';
 
@@ -30,6 +32,24 @@ const allPlugins = ref<HomePlugin[]>([])
 const isLoadingList = ref(true)
 // 导入开发项目时的按钮 loading 状态。
 const isCreatingProject = ref(false)
+// 登记项目对话框是否可见。
+const isRegisterDialogVisible = ref(false)
+// 登记项目时的提交状态。
+const isRegistering = ref(false)
+// 登记项目表单数据。
+const registerForm = ref({ name: '', title: '', description: '', platform: ['darwin', 'win32', 'linux'], author: '' })
+// 创建完成引导弹窗是否可见。
+const isGuideDialogVisible = ref(false)
+// 创建完成的项目路径。
+const scaffoldedProjectPath = ref('')
+
+// 在系统资源管理器中打开已创建的项目目录。
+const openScaffoldedProject = (): void => {
+  window.ztools?.shellOpenPath(scaffoldedProjectPath.value)
+}
+
+// 是否显示礼花效果。
+const showConfetti = ref(false)
 // 当前是否正在保存顺序，避免并发覆盖。
 const isPersistingOrder = ref(false)
 // 未来检索接入后的搜索词真源；当前阶段默认空值。
@@ -106,6 +126,73 @@ const handleCreateProject = async (): Promise<void> => {
     showErrorMessage(error, '导入开发项目失败')
   } finally {
     isCreatingProject.value = false
+  }
+}
+
+// 打开登记项目对话框。
+const handleOpenRegisterDialog = (): void => {
+  registerForm.value = { name: '', title: '', description: '', platform: ['darwin', 'win32', 'linux'], author: '' }
+  isRegisterDialogVisible.value = true
+}
+
+// 处理下拉菜单事件。
+const handleCreateDropdownCommand = (command: string): void => {
+  if (command === 'import') {
+    handleCreateProject()
+  }
+}
+
+// 提交创建项目（模板脚手架模式）。
+const handleRegisterProject = async (form: {
+  name: string; title: string; description: string; platform: string[]; author: string;
+  template?: string; projectPath?: string
+}): Promise<void> => {
+  if (!form.title.trim()) return
+  if (!form.template || !form.projectPath) {
+    showErrorMessage(undefined, '请选择模板和项目位置')
+    return
+  }
+
+  isRegistering.value = true
+  const previousPlugins = [...allPlugins.value]
+
+  try {
+    const hostInternal = window.ztools?.internal
+    if (!hostInternal?.scaffoldDevProject) {
+      throw new Error('当前宿主不支持模板创建')
+    }
+    const result = await hostInternal.scaffoldDevProject({
+      template: form.template as 'vue-vite' | 'react-vite',
+      projectPath: form.projectPath,
+      name: form.name.trim(),
+      title: form.title.trim(),
+      description: form.description.trim() || undefined,
+      platform: form.platform.length > 0 ? [...form.platform] : undefined,
+      author: form.author.trim() || undefined
+    })
+    if (!result?.success) {
+      throw new Error(result?.error || '创建项目失败')
+    }
+
+    isRegisterDialogVisible.value = false
+
+    // 记录项目路径，用于引导弹窗展示。
+    scaffoldedProjectPath.value = `${form.projectPath}/${form.name}`
+    isGuideDialogVisible.value = true
+    showConfetti.value = true
+
+    await refreshPlugins()
+    const importedPluginId = resolveImportedPluginId(previousPlugins, allPlugins.value)
+    if (importedPluginId) {
+      emit('select', importedPluginId)
+    } else if (result.pluginName) {
+      emit('select', result.pluginName)
+    }
+  } catch (error) {
+    logError('DevPluginSidebar', '登记项目', toDisplayMessage(error, '登记开发项目失败'))
+    showErrorMessage(error, '登记开发项目失败')
+  } finally {
+    isRegistering.value = false
   }
 }
 
@@ -193,6 +280,7 @@ defineExpose<DevPluginSidebarExpose>({
             <span class="sidebar__item-text">{{ plugin.title }}</span>
             <span class="sidebar__item-meta">{{ resolveSidebarPluginMeta(plugin) }}</span>
           </span>
+          <span v-if="plugin.isDevModeInstalled" class="sidebar__item-dot" />
         </button>
       </VueDraggable>
 
@@ -211,19 +299,28 @@ defineExpose<DevPluginSidebarExpose>({
             <span class="sidebar__item-text">{{ plugin.title }}</span>
             <span class="sidebar__item-meta">{{ resolveSidebarPluginMeta(plugin) }}</span>
           </span>
+          <span v-if="plugin.isDevModeInstalled" class="sidebar__item-dot" />
         </button>
       </div>
     </el-scrollbar>
 
-    <button
-      type="button"
-      class="sidebar__create"
+    <el-dropdown
+      class="sidebar__create-dropdown"
+      split-button
       :disabled="isCreatingProject"
-      @click="handleCreateProject"
+      @click="handleOpenRegisterDialog"
+      @command="handleCreateDropdownCommand"
     >
-      <span class="sidebar__create-icon i-z-plus" aria-hidden="true" />
-      <span>{{ isCreatingProject ? '导入中...' : '新建项目' }}</span>
-    </button>
+      <span class="sidebar__create-label">
+        <span class="sidebar__create-icon i-z-plus" aria-hidden="true" />
+        <span>{{ isCreatingProject ? '导入中...' : '新建项目' }}</span>
+      </span>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="import">导入 plugin.json</el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
 
     <DevPluginContextMenu
       :visible="isContextMenuVisible"
@@ -232,6 +329,65 @@ defineExpose<DevPluginSidebarExpose>({
       @pin-to-top="handlePinToTop"
       @close="closeContextMenu"
     />
+
+    <ProjectMetaDialog
+      :visible="isRegisterDialogVisible"
+      title="新建项目"
+      confirm-text="创建"
+      :loading="isRegistering"
+      :form="registerForm"
+      show-scaffold
+      @update:visible="isRegisterDialogVisible = $event"
+      @confirm="handleRegisterProject"
+    />
+
+    <el-dialog
+      :model-value="isGuideDialogVisible"
+      title="项目创建成功"
+      width="480px"
+      :close-on-click-modal="false"
+      @update:model-value="isGuideDialogVisible = $event"
+    >
+      <div class="guide">
+        <p class="guide__desc">插件项目已创建到以下位置：</p>
+        <code class="guide__path guide__path--clickable" @click="openScaffoldedProject">{{ scaffoldedProjectPath }}</code>
+        <div class="guide__steps">
+          <div class="guide__step">
+            <span class="guide__step-num">1</span>
+            <div class="guide__step-body">
+              <p class="guide__step-title">安装依赖</p>
+              <code class="guide__step-code">npm install</code>
+            </div>
+          </div>
+          <div class="guide__step">
+            <span class="guide__step-num">2</span>
+            <div class="guide__step-body">
+              <p class="guide__step-title">启动开发</p>
+              <code class="guide__step-code">npm run dev</code>
+            </div>
+          </div>
+          <div class="guide__step">
+            <span class="guide__step-num">3</span>
+            <div class="guide__step-body">
+              <p class="guide__step-title">打包前构建</p>
+              <code class="guide__step-code">npm run build</code>
+            </div>
+          </div>
+          <div class="guide__step">
+            <span class="guide__step-num">4</span>
+            <div class="guide__step-body">
+              <p class="guide__step-title">打包插件</p>
+              <p class="guide__step-hint">打包时选择 <code>dist</code> 文件夹作为构建产物目录</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button type="primary" @click="isGuideDialogVisible = false">我知道了</el-button>
+      </template>
+    </el-dialog>
+
+    <ConfettiOverlay v-if="showConfetti" @done="showConfetti = false" />
   </aside>
 </template>
 
@@ -322,33 +478,132 @@ defineExpose<DevPluginSidebarExpose>({
   font-size: 11px;
 }
 
-.sidebar__create {
-  display: inline-flex;
-  min-height: 35px;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.sidebar__item-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgb(var(--u-green-6, 82 196 26));
+}
+
+.sidebar__create-dropdown {
   margin: 0 10px;
-  border: none;
-  border-radius: 8px;
-  background: var(--u-color-fill-2);
-  color: var(--u-color-text-1);
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 8px 16px;
 }
 
-.sidebar__create:hover:enabled {
-  background: var(--u-color-fill-3);
+.sidebar__create-dropdown :deep(.el-button) {
+  width: 100%;
 }
 
-.sidebar__create:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
+.sidebar__create-dropdown :deep(.el-button-group) {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar__create-dropdown :deep(.el-button-group > .el-button:first-child) {
+  flex: 1;
+}
+
+.sidebar__create-dropdown :deep(.el-button-group > .el-button:last-child) {
+  width: auto;
+  flex: none;
+  padding-inline: 10px;
+}
+
+.sidebar__create-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar__create-icon {
   font-size: 18px;
+}
+
+.guide__desc {
+  margin: 0 0 8px;
+  color: var(--u-color-text-2);
+  font-size: 13px;
+}
+
+.guide__path {
+  display: block;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--u-color-fill-2);
+  color: var(--u-color-text-1);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.guide__path--clickable {
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.guide__path--clickable:hover {
+  background: var(--u-color-fill-3);
+}
+
+.guide__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.guide__step-num {
+  display: flex;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--el-color-primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.guide__step-body {
+  flex: 1;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.guide__step-title {
+  margin: 0 0 4px;
+  color: var(--u-color-text-1);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guide__step-code {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--u-color-fill-2);
+  color: var(--el-color-primary);
+  font-size: 12px;
+}
+
+.guide__step-hint {
+  margin: 0;
+  color: var(--u-color-text-2);
+  font-size: 12px;
+}
+
+.guide__step-hint code {
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--u-color-fill-2);
+  color: var(--el-color-primary);
+  font-size: 12px;
 }
 </style>

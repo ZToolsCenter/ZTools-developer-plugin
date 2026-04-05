@@ -32,6 +32,8 @@ export interface DevelopmentPluginOverview {
   isRunning: boolean
   /** 插件是否已安装开发模式。 */
   isDevModeInstalled: boolean
+  /** 支持的平台列表。 */
+  platform?: string[]
 }
 
 /**

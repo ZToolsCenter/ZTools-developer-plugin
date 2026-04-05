@@ -41,6 +41,8 @@ export interface HomePlugin {
   isDevModeInstalled: boolean
   /** 跨设备共享的展示顺序。 */
   sortOrder?: number
+  /** 插件可运行平台列表。 */
+  platform?: string[]
 }
 
 /**

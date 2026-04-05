@@ -26,7 +26,8 @@ const normalizeDevelopmentPlugins = (
       lastError: plugin.lastError || null,
       isRunning: Boolean(plugin.isRunning || (plugin.path && runningPluginPaths.includes(plugin.path))),
       isDevModeInstalled: Boolean(plugin.isDevModeInstalled),
-      sortOrder: plugin.sortOrder
+      sortOrder: plugin.sortOrder,
+      platform: Array.isArray(plugin.platform) ? plugin.platform : []
     }))
 }
 
@@ -137,17 +138,7 @@ export async function loadDevelopmentPlugins(): Promise<HomePlugin[]> {
  * 生成侧边栏项目的简短状态文案。
  */
 export function resolveSidebarPluginMeta(plugin: HomePlugin): string {
-  const parts = [DEV_PROJECT_STATUS_LABELS[plugin.localStatus]]
-
-  if (plugin.isRunning) {
-    parts.push('运行中')
-  }
-
-  if (plugin.isDevModeInstalled) {
-    parts.push('DEV 已安装')
-  }
-
-  return parts.join(' · ')
+  return DEV_PROJECT_STATUS_LABELS[plugin.localStatus] || ''
 }
 
 /**

@@ -20,13 +20,10 @@ const {
   isPackageDialogVisible,
   isPackageDisabled,
   isPackaging,
-  isReloadDisabled,
-  isReloading,
   isSelectConfigDisabled,
   packageDescription,
   packageDialogPath,
   packageDialogVersion,
-  reloadDescription,
   selectConfigDescription,
   selectConfigStatus,
   showMissingConfigBindingCard,
@@ -34,7 +31,6 @@ const {
   handleOpenFolder,
   handleOpenPackageDialog,
   handlePackagePlugin,
-  handleReload,
   handleSelectConfig,
   handleSelectPackagePath,
   handleToggleDevMode
@@ -118,16 +114,6 @@ const {
         </template>
       </CardAtom>
       <CardAtom
-        title="重载插件"
-        :description="reloadDescription"
-        icon-class="i-z-redo"
-        icon-tone="success"
-        :status="isReloading ? '重载中…' : ''"
-        :clickable="true"
-        :disabled="isReloadDisabled"
-        @click="handleReload"
-      />
-      <CardAtom
         v-if="showSelectConfig"
         title="选择配置文件"
         :description="selectConfigDescription"
@@ -160,7 +146,13 @@ const {
     :close-on-press-escape="!isPackaging"
   >
     <el-form label-position="top" size="default" class="package-dialog__form">
-      <el-form-item label="打包目录">
+      <el-form-item>
+        <template #label>
+          <span>打包目录</span>
+          <el-tooltip content="请选择 dist 构建路径" placement="top">
+            <span class="package-dialog__help">?</span>
+          </el-tooltip>
+        </template>
         <div class="package-dialog__path-row">
           <el-input
             :model-value="packageDialogPath"
@@ -284,5 +276,21 @@ const {
 .package-dialog__path-row .el-input {
   flex: 1;
   min-width: 0;
+}
+
+.package-dialog__help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--el-text-color-secondary);
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: help;
+  vertical-align: middle;
 }
 </style>

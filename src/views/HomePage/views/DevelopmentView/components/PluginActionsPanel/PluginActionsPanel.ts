@@ -80,10 +80,7 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
    */
   const isOpeningFolder = ref(false)
   /**
-   * 重载插件时的加载状态。
-   */
-  const isReloading = ref(false)
-  /**
+
    * 重新选择配置文件时的加载状态。
    */
   const isSelectingConfig = ref(false)
@@ -136,12 +133,6 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     return !canInstallDevMode.value
   })
   /**
-   * 当前项目是否支持重载。
-   */
-  const canReload = computed(() =>
-    ['ready', 'config_missing', 'invalid_config'].includes(props.plugin?.localStatus ?? '')
-  )
-  /**
    * 当前项目是否支持打包。
    */
   const canPackage = computed(() => props.plugin?.localStatus === 'ready')
@@ -149,7 +140,7 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
    * 当前是否需要展示修复配置入口。
    */
   const showSelectConfig = computed(() =>
-    ['invalid_config', 'unbound'].includes(props.plugin?.localStatus ?? '')
+    ['invalid_config'].includes(props.plugin?.localStatus ?? '')
   )
   /**
    * 当前是否应以缺失配置替换卡片覆盖工程目录入口。
@@ -223,28 +214,9 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     return ''
   })
   /**
-   * 重载按钮是否禁用。
-   */
-  const isReloadDisabled = computed(() => isReloading.value || !canReload.value)
-  /**
    * 打包按钮是否禁用。
    */
   const isPackageDisabled = computed(() => isPackaging.value || !canPackage.value)
-  /**
-   * 重载动作文案。
-   */
-  const reloadDescription = computed(() => {
-    switch (props.plugin?.localStatus) {
-      case 'config_missing':
-        return '重新检查当前绑定的 plugin.json 是否恢复'
-      case 'invalid_config':
-        return '重新读取当前配置文件并刷新项目信息'
-      case 'ready':
-        return '重新读取 plugin.json 与开发资源'
-      default:
-        return '当前设备未绑定可重载的配置文件'
-    }
-  })
   /**
    * 打包动作文案。
    */
@@ -260,9 +232,8 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
         return '当前绑定的 plugin.json 不存在，请重新选择配置文件'
       case 'invalid_config':
         return '当前 plugin.json 非法或 identity 不匹配，请重新选择合法配置'
-      case 'unbound':
       default:
-        return '当前设备尚未绑定配置文件，请选择该项目的 plugin.json'
+        return '请选择该项目的 plugin.json 文件'
     }
   })
   /**
@@ -395,42 +366,6 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
   }
 
   /**
-   * 请求宿主重新加载当前开发项目。
-   */
-  async function handleReload() {
-    if (!props.plugin?.name || !canReload.value) {
-      return
-    }
-
-    isReloading.value = true
-    logInfo('PluginActionsPanel', '重载插件', `开始重载 ${props.plugin.name}`)
-    const hostInternal = resolveHostInternal()
-
-    if (!hostInternal?.reloadDevProject) {
-      logWarn('PluginActionsPanel', '重载插件', '宿主未提供 reloadDevProject 能力')
-      showErrorMessage(undefined, '宿主服务不可用')
-      isReloading.value = false
-      return
-    }
-
-    try {
-      ensureActionSuccess(await hostInternal.reloadDevProject(props.plugin.name), '重载失败')
-      logInfo('PluginActionsPanel', '重载插件', `重载完成: ${props.plugin.name}`)
-      showMessage('重载插件成功', 'success')
-      notifyUpdated()
-    } catch (error) {
-      logError(
-        'PluginActionsPanel',
-        '重载插件',
-        `重载失败: ${error instanceof Error ? error.message : 'unknown error'}`
-      )
-      showErrorMessage(error, '重载失败')
-    } finally {
-      isReloading.value = false
-    }
-  }
-
-  /**
    * 请求宿主重新选择配置文件。
    */
   async function handleSelectConfig() {
@@ -552,12 +487,9 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     isPackageDialogVisible,
     isPackageDisabled,
     isPackaging,
-    isReloadDisabled,
-    isReloading,
     packageDescription,
     packageDialogPath,
     packageDialogVersion,
-    reloadDescription,
     selectConfigDescription,
     isSelectConfigDisabled,
     selectConfigStatus,
@@ -566,7 +498,6 @@ export function usePluginActionsPanel(props: PluginActionsPanelProps, emit: Plug
     handleOpenFolder,
     handleOpenPackageDialog,
     handlePackagePlugin,
-    handleReload,
     handleSelectConfig,
     handleSelectPackagePath,
     handleToggleDevMode

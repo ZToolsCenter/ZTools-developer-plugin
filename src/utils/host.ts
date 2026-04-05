@@ -41,6 +41,8 @@ export interface HostDevProject {
   installedAt?: string
   /** 跨设备共享的展示顺序。 */
   sortOrder?: number
+  /** 插件可运行平台列表，如 ["win32", "darwin"]。 */
+  platform?: string[]
 }
 
 /**
@@ -66,8 +68,6 @@ export interface HostAccess {
   getRunningPlugins(): Promise<string[]>
   /** 打开详情时按需校验项目绑定状态。 */
   validateDevProject?(pluginName: string): Promise<HostActionResult>
-  /** 重新读取配置文件并刷新开发项目。 */
-  reloadDevProject?(pluginName: string): Promise<HostActionResult>
   /** 为开发项目重新选择配置文件。 */
   selectDevProjectConfig?(pluginName: string, configPath?: string): Promise<HostActionResult>
   /** 打包指定开发项目。 */
@@ -92,6 +92,18 @@ export interface HostInternalAccess extends HostAccess {
   uninstallDevPlugin?(pluginName: string): Promise<HostActionResult>
   /** 更新开发项目的共享展示顺序。 */
   updateDevProjectsOrder?(pluginNames: string[]): Promise<HostActionResult>
+  /** 从模板创建开发项目。 */
+  scaffoldDevProject?(params: {
+    template: 'vue-vite' | 'react-vite'
+    projectPath: string
+    name: string
+    title: string
+    description?: string
+    platform?: string[]
+    author?: string
+  }): Promise<HostActionResult & { pluginName?: string }>
+  /** 更新开发项目的登记元数据。 */
+  updateDevProjectMeta?(projectName: string, meta: { title?: string; description?: string; platform?: string[]; author?: string }): Promise<HostActionResult>
 }
 
 /**
