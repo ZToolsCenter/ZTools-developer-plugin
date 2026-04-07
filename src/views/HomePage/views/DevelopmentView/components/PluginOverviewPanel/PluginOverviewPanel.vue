@@ -23,6 +23,15 @@ const { displayAuthor, displayPluginId, displayDescription, displayPlatform, han
         <h2 class="overview-panel__title">{{ plugin?.title ?? '未命名插件' }}</h2>
         <div class="overview-panel__badges">
           <span v-if="plugin?.isRunning" class="overview-panel__badge overview-panel__badge--success">运行中</span>
+          <el-tooltip :content="isRefreshing ? '刷新中…' : '刷新'" placement="bottom">
+            <button
+              class="overview-panel__icon-btn"
+              :disabled="isRefreshing"
+              @click="handleRefreshProject"
+            >
+              <div class="i-z-refresh w-4.5 h-4.5" :class="{ 'overview-panel__spin': isRefreshing }" />
+            </button>
+          </el-tooltip>
           <el-dropdown :show-arrow="false"
                        trigger="click"
                        size="small"
@@ -35,14 +44,6 @@ const { displayAuthor, displayPluginId, displayDescription, displayPlatform, han
                   <div class="flex items-center w-full gap-2">
                     <div class="i-z-edit w-4 h-4"/>
                     <div>编辑</div>
-                  </div>
-                </el-dropdown-item>
-                <el-dropdown-item class="flex justify-center"
-                                  :disabled="isRefreshing"
-                                  @click="handleRefreshProject">
-                  <div class="flex items-center w-full gap-2">
-                    <div class="i-z-refresh w-4 h-4"/>
-                    <div>{{ isRefreshing ? '刷新中…' : '刷新' }}</div>
                   </div>
                 </el-dropdown-item>
                 <el-dropdown-item class="flex justify-center"
@@ -256,6 +257,37 @@ const { displayAuthor, displayPluginId, displayDescription, displayPlatform, han
   color: var(--u-color-text-2);
   font-size: 12px;
   line-height: 1.7;
+}
+
+.overview-panel__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--u-color-text-2);
+  cursor: pointer;
+  padding: 0;
+  transition: color 150ms;
+}
+
+.overview-panel__icon-btn:hover {
+  color: var(--u-color-text-1);
+}
+
+.overview-panel__icon-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.overview-panel__spin {
+  animation: overview-spin 0.8s linear infinite;
+}
+
+@keyframes overview-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 767px) {

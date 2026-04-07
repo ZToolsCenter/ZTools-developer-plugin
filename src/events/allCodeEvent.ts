@@ -3,7 +3,7 @@ import { jumpFunctionPluginInstaller } from '@/views/HomePage'
 
 const DEV_PROJECTS_REFRESH_EVENT = 'dev-projects:refresh-requested'
 
-function dispatchDevProjectsRefreshRequested(): void {
+export function dispatchDevProjectsRefreshRequested(): void {
   window.dispatchEvent(new Event(DEV_PROJECTS_REFRESH_EVENT))
 }
 

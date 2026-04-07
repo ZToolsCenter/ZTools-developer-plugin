@@ -8,6 +8,7 @@ import {useTheme} from "@/composables";
 import { dispatchZtoolsCodeEvent, initZtoolsBaseEventHandler } from '@/events'
 // 单独导入注册事件
 import './events/allCodeEvent'
+import { dispatchDevProjectsRefreshRequested } from '@/events/allCodeEvent'
 
 if (window.ztools) {
   initZtoolsBaseEventHandler();
@@ -16,6 +17,8 @@ if (window.ztools) {
   ztools.onPluginEnter((action) => {
     // 将 utools 事件派发根据不同的 code 进行派发出去
     console.log('[插件事件: onPluginEnter]', action)
+    // 每次进入插件时刷新开发中插件列表，确保数据与宿主同步
+    dispatchDevProjectsRefreshRequested()
     dispatchZtoolsCodeEvent(action, router)
   })
 }

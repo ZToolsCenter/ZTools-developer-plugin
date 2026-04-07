@@ -1,7 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { logError, logInfo, logWarn } from '@/utils/logger'
-import { showErrorMessage } from '@/utils/message'
+import { showErrorMessage, showMessage } from '@/utils/message'
 import type { HostActionResult, HostInternalAccess } from '@/utils/host'
 import type { DevelopmentPluginOverview } from '../../DevelopmentView'
 
@@ -154,6 +154,7 @@ export function usePluginOverviewPanel(
     try {
       ensureActionSuccess(await hostInternal.validateDevProject(props.plugin.name), '刷新失败')
       notifyUpdated()
+      showMessage('刷新成功')
     } catch (error) {
       logError('PluginOverviewPanel', '刷新项目', `失败: ${error instanceof Error ? error.message : 'unknown'}`)
       showErrorMessage(error, '刷新项目信息失败')
