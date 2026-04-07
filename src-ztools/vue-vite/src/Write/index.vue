@@ -18,7 +18,7 @@ watch(
       } else if (enterAction.type === 'img') {
         outputPath = window.services.writeImageFile(enterAction.payload)
       }
-    } catch (err) {
+    } catch (_err) {
       // 写入错误弹出通知
       window.ztools.showNotification('文件保存出错了！')
     }

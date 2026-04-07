@@ -1,5 +1,3 @@
-import type { PropType } from 'vue'
-
 /**
  * 卡片原子项图标色调。
  */

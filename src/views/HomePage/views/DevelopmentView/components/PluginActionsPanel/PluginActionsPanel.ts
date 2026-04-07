@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { logError, logInfo, logWarn } from '@/utils/logger'
-import {showErrorMessage, showMessage} from '@/utils/message'
+import {showErrorMessage} from '@/utils/message'
 import type { HostActionResult, HostInternalAccess } from '@/utils/host'
 import type { DevelopmentPluginOverview } from '../../DevelopmentView'
 

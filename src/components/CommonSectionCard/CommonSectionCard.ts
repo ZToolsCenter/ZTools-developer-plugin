@@ -1,5 +1,3 @@
-import type { PropType } from 'vue'
-
 /**
  * 分区卡片包装组件使用的属性。
  */

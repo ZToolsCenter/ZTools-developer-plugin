@@ -9,7 +9,7 @@ import { codeInspectorPlugin } from 'code-inspector-plugin'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import {join, resolve} from "path";
+import {join} from "path";
 
 
 // https://vite.dev/config/

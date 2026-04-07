@@ -86,6 +86,8 @@ export interface HostInternalAccess extends HostAccess {
   upsertDevProjectByConfigPath?(pluginJsonPath: string): Promise<HostActionResult>
   /** 从开发项目列表中移除指定项目，但保留磁盘目录。 */
   removeDevProject?(pluginName: string): Promise<HostActionResult>
+  /** 重载指定的开发模式插件。 */
+  reloadDevProject?(pluginName: string): Promise<HostActionResult>
   /** 将当前工程安装为开发模式插件。 */
   installDevPlugin?(pluginName: string): Promise<HostActionResult>
   /** 将当前工程从开发模式卸载。 */

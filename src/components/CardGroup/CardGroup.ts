@@ -1,5 +1,3 @@
-import type { PropType } from 'vue'
-
 /**
  * 卡片分组组件使用的属性。
  */

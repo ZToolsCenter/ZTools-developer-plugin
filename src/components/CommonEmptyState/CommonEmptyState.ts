@@ -1,5 +1,3 @@
-import type { PropType } from 'vue'
-
 /**
  * 空状态组件使用的共享属性。
  */
