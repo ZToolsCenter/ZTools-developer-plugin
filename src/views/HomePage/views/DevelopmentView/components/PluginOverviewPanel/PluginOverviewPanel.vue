@@ -132,7 +132,7 @@ const { displayAuthor, displayPluginId, displayDescription, displayPlatform, han
             <span class="guide__step-num">4</span>
             <div class="guide__step-body">
               <p class="guide__step-title">打包插件</p>
-              <p class="guide__step-hint">打包时选择 <code>dist</code> 文件夹作为构建产物目录</p>
+              <p class="guide__step-hint">默认打包 <code>src-ztools</code> 插件目录</p>
             </div>
           </div>
         </div>

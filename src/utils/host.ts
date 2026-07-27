@@ -95,18 +95,24 @@ export interface HostInternalAccess extends HostAccess {
   /** 更新开发项目的共享展示顺序。 */
   updateDevProjectsOrder?(pluginNames: string[]): Promise<HostActionResult>
   /** 从模板创建开发项目。 */
-  scaffoldDevProject?(params: {
-    template: 'vue-vite' | 'react-vite'
-    projectPath: string
-    name: string
-    title: string
-    description?: string
-    platform?: string[]
-    author?: string
-  }): Promise<HostActionResult & { pluginName?: string }>
+  scaffoldDevProject?(params: ScaffoldDevProjectParams): Promise<ScaffoldDevProjectResult>
   /** 更新开发项目的登记元数据。 */
   updateDevProjectMeta?(projectName: string, meta: { title?: string; description?: string; platform?: string[]; author?: string }): Promise<HostActionResult>
 }
+
+/** 从模板创建开发项目时使用的表单参数。 */
+export interface ScaffoldDevProjectParams {
+  template: 'vue-vite' | 'react-vite'
+  projectPath: string
+  name: string
+  title: string
+  description?: string
+  platform?: string[]
+  author?: string
+}
+
+/** 创建并导入开发项目后的操作结果。 */
+export type ScaffoldDevProjectResult = HostActionResult & { pluginName?: string }
 
 /**
  * 本地开发与测试阶段使用的兜底插件数据。

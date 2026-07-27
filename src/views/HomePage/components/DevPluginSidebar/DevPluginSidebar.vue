@@ -142,7 +142,11 @@ const handleCreateDropdownCommand = (command: string): void => {
   }
 }
 
-// 提交创建项目（模板脚手架模式）。
+/**
+ * 提交模板脚手架表单，并在成功后刷新、定位新项目。
+ * @param form 新项目的模板、存放位置与插件元数据
+ * @returns 创建流程完成后结束的 Promise
+ */
 const handleRegisterProject = async (form: {
   name: string; title: string; description: string; platform: string[]; author: string;
   template?: string; projectPath?: string
@@ -158,10 +162,13 @@ const handleRegisterProject = async (form: {
 
   try {
     const hostInternal = window.ztools?.internal
-    if (!hostInternal?.scaffoldDevProject) {
+    // 市场 ASAR 优先使用插件 preload 的物理模板复制能力，开发态回退到宿主实现。
+    const scaffoldDevProject =
+      window.ztoolsDeveloperPlugin?.scaffoldDevProject ?? hostInternal?.scaffoldDevProject
+    if (!scaffoldDevProject) {
       throw new Error('当前宿主不支持模板创建')
     }
-    const result = await hostInternal.scaffoldDevProject({
+    const result = await scaffoldDevProject({
       template: form.template as 'vue-vite' | 'react-vite',
       projectPath: form.projectPath,
       name: form.name.trim(),
@@ -377,7 +384,7 @@ defineExpose<DevPluginSidebarExpose>({
             <span class="guide__step-num">4</span>
             <div class="guide__step-body">
               <p class="guide__step-title">打包插件</p>
-              <p class="guide__step-hint">打包时选择 <code>dist</code> 文件夹作为构建产物目录</p>
+              <p class="guide__step-hint">默认打包 <code>src-ztools</code> 插件目录</p>
             </div>
           </div>
         </div>

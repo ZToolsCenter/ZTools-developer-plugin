@@ -60,6 +60,10 @@
 ### 宿主 API
 
 - `window.ztools.internal` 允许在页面级或区块级业务组件内部直接使用，以保证功能内聚。
+- 市场 ASAR 内的模板目录不能交给宿主按普通目录复制；创建项目必须优先走 `src-ztools/preload.js` 注入的 `window.ztoolsDeveloperPlugin`，并保留宿主 API 作为本地开发回退。
+- `src-ztools/package.json` 必须保持 `"type": "commonjs"`，防止源码仓库的 ESM 配置导致 preload 无法使用 Node.js `require`。
+- `src-ztools/plugin.json` 的 `unpack` 规则只需覆盖 Vue/React 模板，保证生产安装后存在可复制的物理目录；preload 保持在 ASAR 内由 Electron 直接加载。
+- Vue/React 脚手架统一将 `src-ztools/` 作为插件根目录，配置、图标和 Preload 放在其中，Vite 产物只能输出到 `src-ztools/dist/`。
 - `src/components` 下的共享组件禁止直接依赖 `window.ztools.internal`。
 - 如果同一类宿主读取逻辑需要在多个位置复用，优先复用 `src/utils/host.ts` 中的能力，而不是在多个组件里复制判断逻辑。
 

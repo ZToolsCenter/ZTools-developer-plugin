@@ -1,7 +1,11 @@
 /// <reference types="vite/client" />
 /// <reference types="@ztools-center/ztools-api-types" />
 
-import type { HostInternalAccess } from './src/utils/host'
+import type {
+  HostInternalAccess,
+  ScaffoldDevProjectParams,
+  ScaffoldDevProjectResult
+} from './src/utils/host'
 
 declare global {
   interface ZToolsApi {
@@ -14,6 +18,10 @@ declare global {
   interface Window {
     /** 桌面容器注入的宿主能力；测试环境允许只挂载当前场景需要的子集。 */
     ztools?: Partial<ZToolsApi>
+    /** 开发者插件 preload 注入的 ASAR 兼容脚手架能力。 */
+    ztoolsDeveloperPlugin?: {
+      scaffoldDevProject(params: ScaffoldDevProjectParams): Promise<ScaffoldDevProjectResult>
+    }
   }
 }
 

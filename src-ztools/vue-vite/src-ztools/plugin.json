@@ -5,7 +5,7 @@
   "description": "{{DESCRIPTION}}",
   "author": "{{AUTHOR}}",
   "version": "1.0.0",
-  "main": "index.html",
+  "main": "dist/index.html",
   "preload": "preload/services.js",
   "logo": "logo.png",
   "development": {

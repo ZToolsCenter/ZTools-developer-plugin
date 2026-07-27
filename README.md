@@ -7,6 +7,7 @@
 - 已落地左侧开发项目列表
 - 已落地顶部 tab 路由导航
 - 已落地开发工作台首页
+- 已支持从 Vue/React 模板创建并自动导入开发项目
 - 已落地开发模式安装/卸载卡片（安装前项目可见但不可重载）
 - 已接入宿主兜底访问与统一日志
 - 已抽出 `CardGroup`、`CardAtom`、`CommonSectionCard`、`CommonEmptyState` 等共享组件
@@ -40,6 +41,8 @@
 - `reloadPlugin()`
 - `packagePlugin()`
 - `importDevPlugin()`
+- `upsertDevProjectByConfigPath()`
+- `scaffoldDevProject()`（本地开发时的宿主回退）
 - `installDevPlugin()`
 - `uninstallDevPlugin()`
 
@@ -50,6 +53,17 @@
 - 开发页支持通过“安装（开发模式）/卸载（开发模式）”切换状态，并触发侧边栏刷新
 
 在本地开发和测试环境中，`src/utils/host.ts` 提供了最小兜底数据，避免没有宿主时页面直接失效。
+
+市场安装版以 ASAR 运行。`src-ztools/preload.js` 负责从 `.asar.unpacked` 中复制 Vue/React
+模板、替换项目元数据，并通过宿主的 `upsertDevProjectByConfigPath()` 登记新项目。页面优先使用
+该 preload 能力，本地开发时才回退到宿主的 `scaffoldDevProject()`。`src-ztools/plugin.json`
+中的 `unpack` 规则必须持续覆盖 `vue-vite/**` 和 `react-vite/**`；`preload.js` 保持在
+ASAR 内并由 Electron 直接加载。`src-ztools/package.json` 将插件根目录固定为 CommonJS，
+避免源码仓库根目录的 `"type": "module"` 影响 preload 中的 Node.js `require`。
+
+Vue/React 脚手架项目统一使用 `src-ztools/` 作为插件根目录，插件配置、图标和 Preload 位于
+该目录，Vite 构建产物输出到 `src-ztools/dist/`。脚手架登记时使用
+`src-ztools/plugin.json`，因此构建后可以直接打包完整的 `src-ztools/` 目录。
 
 ## AI 浏览器调试支持
 
@@ -103,6 +117,12 @@ src/
         FeedbackView/
         ServicesView/
         TeamView/
+src-ztools/
+  package.json
+  plugin.json
+  preload.js
+  vue-vite/
+  react-vite/
 ```
 
 目录原则：
@@ -110,6 +130,7 @@ src/
 - `src/components` 放共享 UI 组件
 - `src/views/HomePage/components` 放布局级业务组件
 - `src/views/HomePage/views/*` 放路由页面
+- `src-ztools/preload.js` 放市场 ASAR 环境所需的文件系统桥接逻辑，`src-ztools/package.json` 将其固定为 CommonJS
 - 开发工作台私有区块继续收敛在 `DevelopmentView/components`
 
 ## 工程约定

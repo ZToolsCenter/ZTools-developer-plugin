@@ -149,7 +149,7 @@ const {
       <el-form-item>
         <template #label>
           <span>打包目录</span>
-          <el-tooltip content="请选择 dist 构建路径" placement="top">
+          <el-tooltip content="默认打包 plugin.json 所在的 src-ztools 目录" placement="top">
             <span class="package-dialog__help">?</span>
           </el-tooltip>
         </template>
@@ -157,7 +157,7 @@ const {
           <el-input
             :model-value="packageDialogPath"
             readonly
-            placeholder="默认为项目根目录"
+            placeholder="默认为 src-ztools 插件目录"
           />
           <el-button @click="handleSelectPackagePath">选择</el-button>
         </div>
